@@ -1,0 +1,62 @@
+@media (prefers-color-scheme:dark)  {
+    :root {
+        --dark-mode-item: #211F20;
+        --dark-mode-item-darker: #1A1819;
+        --dark-mode-item-lighter: #454851;
+    }
+
+    body { background-color: #121212; color: #F1EEEC; }
+    
+    .list-group-item { border: 1px solid rgba(255,255,255,.125); }
+    .list-group-item-action { color: #F1EEEC; }
+    
+    .list-group-item,
+    .page-item.disabled .page-link,
+    .page-item.disabled:hover .page-link,
+    .card,
+    .page-item .page-link {
+        background-color: var(--dark-mode-item);
+        border-color: var(--dark-mode-item);
+        color: #F1EEEC;
+    }
+    
+    .list-group-item:hover { background-color: var(--dark-mode-item-darker) !important; color: #F1EEEC; }
+    .list-group-item.disabled, .list-group-item:disabled,
+    .list-group-item.focus, .list-group-item:focus { background-color: var(--dark-mode-item-darker); opacity: 75%; color: #F1EEEC; }
+
+    .page-item.disabled .page-link, .page-item.disabled:hover .page-link { background-color: var(--dark-mode-item) !important; border-color: var(--dark-mode-item) !important; }
+    .page-item:hover .page-link { background-color: var(--dark-mode-item-darker) !important; border-color: var(--dark-mode-item-darker) !important; }
+
+    .page-item .page-link { border-color: var(--dark-mode-item) !important; }
+
+    .btn.btn-adaptive {
+        background-color:var(--dark-mode-item) !important;
+        color: #F1EEEC !important;
+        border: 0px solid var(--dark-mode-item) !important;
+    }
+
+    .btn.btn-adaptive:hover {
+        background-color: var(--dark-mode-item-darker) !important;
+        color: #F1EEEC !important;
+    }
+
+    .btn.btn-adaptive-theme {
+        background-color:var(--dark-mode-item) !important;
+        color: #F1EEEC !important;
+        border: 0px solid var(--dark-mode-item) !important;
+    }
+
+    .btn.btn-adaptive-theme:hover {
+        background-color: var(--theme-color) !important;
+        color: #F1EEEC !important;
+    }
+
+    .text-muted { color: #C0BEBC !important; }
+
+    @media only screen and (max-width:650px) {
+        
+        body { background-color: black; }
+        div.nav-container { padding-top: 8px; padding-bottom: 8px; }
+        footer.copyright { padding-top: 8px; padding-bottom: 0px; }
+    }
+}

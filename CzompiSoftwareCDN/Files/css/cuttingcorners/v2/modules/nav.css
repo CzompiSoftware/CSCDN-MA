@@ -1,0 +1,79 @@
+
+/*#region Nav modification*/
+.nav-tabs {
+    border: 0px !important;
+  }
+
+.nav-lang {
+padding: 0.25rem .5rem;
+}
+
+.nav-lang:hover {
+filter: brightness(75%);
+}
+
+.nav-link:hover {
+color: var(--theme-button-text-color) !important;
+background: var(--theme-color-darker) !important;
+}
+
+.nav-link,
+.nav-link-rt {
+margin-right: 1rem;
+color: var(--theme-button-text-color);
+border-radius: 0px !important;
+border: 0px !important;
+background: var(--theme-color);
+--notchSize: 8px;
+clip-path: polygon(
+    calc(100% - var(--notchSize))  0%,
+    100% var(--notchSize),
+    100% 100%,
+    0% 100%,
+    0% 0%
+);
+}
+
+.nav-link-lt {
+border-radius: 0px !important;
+color: var(--theme-button-text-color);
+border: 0px !important;
+background: var(--theme-color);
+--notchSize: 8px;
+clip-path: polygon(
+    calc(100% - var(--notchSize))  0%,
+    100% 0%,
+    100% 100%,
+    0% 100%,
+    0% var(--notchSize)
+);
+}
+
+.nav-link.active {
+background: var(--theme-color-darker) !important;
+color: var(--theme-button-text-color) !important;
+}
+
+.nav-link.active:hover {
+background: var(--theme-color-darker) !important;
+opacity: 75%;
+color: var(--theme-button-text-color) !important;
+}
+
+div.nav-container {
+padding-top: 32px;
+padding-bottom: 32px;
+background-color: rgba(10, 10, 10, 0.05);
+background-image: url("../img/background-blue.png");
+background-repeat: no-repeat;
+background-size: cover;
+background-position: top;
+margin-bottom: 16px;
+}
+
+a > span.navbar-brand,
+a > span.navbar-brand:hover {
+color: var(--theme-color);
+}
+/*#endregion Nav modification*/
+  

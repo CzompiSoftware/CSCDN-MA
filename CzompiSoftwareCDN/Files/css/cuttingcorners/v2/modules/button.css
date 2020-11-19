@@ -1,0 +1,52 @@
+
+/*#region Button modification*/
+.link-theme {
+    color: var(--theme-color) !important;
+}
+
+.link-theme:hover {
+    color: var(--theme-color-darker) !important;
+}
+
+.btn,
+.btn-lr,
+.list-group-item,
+.list-group-item-lr {
+    border-radius: 0px !important;
+    border: 0px !important;
+    --notchSize: 8px;
+    clip-path: polygon(
+        var(--notchSize)  0%,
+        100% 0%,
+        100% calc(100% - var(--notchSize)),
+        calc(100% - var(--notchSize)) 100%,
+        0% 100%,
+        0% var(--notchSize)
+    );
+}
+
+.btn-rl,
+.list-group-item-rl {
+    --notchSize: 8px;
+    clip-path: polygon(
+        0% 0%,
+        calc(100% - var(--notchSize)) 0%,
+        100% var(--notchSize),
+        100% 100%,
+        var(--notchSize) 100%,
+        0% calc(100% - var(--notchSize))
+    );
+}
+
+.btn.btn-theme,
+.active {
+    background-color: var(--theme-color) !important;
+    color: var(--theme-button-text-color) !important;
+    border: 0px solid var(--theme-color) !important;
+}
+
+.btn.btn-theme:hover {
+    background-color: var(--theme-color-darker) !important;
+    color: var(--theme-button-text-color) !important;
+}
+/*#endregion Button modification*/

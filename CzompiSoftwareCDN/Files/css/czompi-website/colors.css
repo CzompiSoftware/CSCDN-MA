@@ -1,0 +1,291 @@
+
+/* Custom colors */
+a.navy,
+a.navy:active {
+  color: #000080 !important;
+  text-decoration: none;
+}
+
+a.navy:hover {
+  color: #000066 !important;
+  text-decoration: underline;
+}
+
+a.blue,
+a.blue:active {
+  color: #0074D9 !important;
+  text-decoration: none;
+}
+
+a.blue:hover {
+  color: #005CAD !important;
+  text-decoration: underline;
+}
+
+a.aqua,
+a.aqua:active {
+  color: #7FDBFF !important;
+  text-decoration: none;
+}
+
+a.aqua:hover {
+  color: #65AFCC !important;
+  text-decoration: underline;
+}
+
+a.teal,
+a.teal:active {
+  color: #39CCCC !important;
+  text-decoration: none;
+}
+
+a.teal:hover {
+  color: #2DA3A3 !important;
+  text-decoration: underline;
+}
+
+a.olive,
+a.olive:active {
+  color: #3D9970 !important;
+  text-decoration: none;
+}
+
+a.olive:hover {
+  color: #307A59 !important;
+  text-decoration: underline;
+}
+
+a.green,
+a.green:active {
+  color: #2ECC40 !important;
+  text-decoration: none;
+}
+
+a.green:hover {
+  color: #24A333 !important;
+  text-decoration: underline;
+}
+
+a.lime,
+a.lime:active {
+  color: #01FF70 !important;
+  text-decoration: none;
+}
+
+a.lime:hover {
+  color: #00CC59 !important;
+  text-decoration: underline;
+}
+
+a.yellow,
+a.yellow:active {
+  color: #FFDC00 !important;
+  text-decoration: none;
+}
+
+a.yellow:hover {
+  color: #CCB000 !important;
+  text-decoration: underline;
+}
+
+a.orange,
+a.orange:active {
+  color: #FF851B !important;
+  text-decoration: none;
+}
+
+a.orange:hover {
+  color: #CC6A15 !important;
+  text-decoration: underline;
+}
+
+a.red,
+a.red:active {
+  color: #FF4136 !important;
+  text-decoration: none;
+}
+
+a.red:hover {
+  color: #CC342B !important;
+  text-decoration: underline;
+}
+
+a.fuchsia,
+a.fuchsia:active {
+  color: #F012BE !important;
+  text-decoration: none;
+}
+
+a.fuchsia:hover {
+  color: #C00E98 !important;
+  text-decoration: underline;
+}
+
+a.purple,
+a.purple:active {
+  color: #B10DC9 !important;
+  text-decoration: none;
+}
+
+a.purple:hover {
+  color: #8D0AA0 !important;
+  text-decoration: underline;
+}
+
+a.maroon,
+a.maroon:active {
+  color: #85144B !important;
+  text-decoration: none;
+}
+
+a.maroon:hover {
+  color: #6A103C !important;
+  text-decoration: underline;
+}
+
+a.white,
+a.white:active {
+  color: #FFFFFF !important;
+  text-decoration: none;
+}
+
+a.white:hover {
+  color: #CCCCCC !important;
+  text-decoration: underline;
+}
+
+a.silver,
+a.silver:active {
+  color: #DDDDDD !important;
+  text-decoration: none;
+}
+
+a.silver:hover {
+  color: #B0B0B0 !important;
+  text-decoration: underline;
+}
+
+a.gray,
+a.gray:active {
+  color: #AAAAAA !important;
+  text-decoration: none;
+}
+
+a.gray:hover {
+  color: #888888 !important;
+  text-decoration: underline;
+}
+
+a.black,
+a.black:active {
+  color: #282828 !important;
+  text-decoration: none;
+}
+
+a.black:hover {
+  color: #111111 !important;
+  text-decoration: underline;
+}
+
+/* Custom colors */
+.navy,
+.navy:active {
+  color: #000080 !important;
+  text-decoration: none;
+}
+
+.blue,
+.blue:active {
+  color: #0074D9 !important;
+  text-decoration: none;
+}
+
+.aqua,
+.aqua:active {
+  color: #7FDBFF !important;
+  text-decoration: none;
+}
+
+.teal,
+.teal:active {
+  color: #39CCCC !important;
+  text-decoration: none;
+}
+
+.olive,
+.olive:active {
+  color: #3D9970 !important;
+  text-decoration: none;
+}
+
+.green,
+.green:active {
+  color: #2ECC40 !important;
+  text-decoration: none;
+}
+
+.lime,
+.lime:active {
+  color: #01FF70 !important;
+  text-decoration: none;
+}
+
+.yellow,
+.yellow:active {
+  color: #FFDC00 !important;
+  text-decoration: none;
+}
+
+.orange,
+.orange:active {
+  color: #FF851B !important;
+  text-decoration: none;
+}
+
+.red,
+.red:active {
+  color: #FF4136 !important;
+  text-decoration: none;
+}
+
+.fuchsia,
+.fuchsia:active {
+  color: #F012BE !important;
+  text-decoration: none;
+}
+
+.purple,
+.purple:active {
+  color: #B10DC9 !important;
+  text-decoration: none;
+}
+
+.maroon,
+.maroon:active {
+  color: #85144B !important;
+  text-decoration: none;
+}
+
+.white,
+.white:active {
+  color: #FFFFFF !important;
+  text-decoration: none;
+}
+
+.silver,
+.silver:active {
+  color: #DDDDDD !important;
+  text-decoration: none;
+}
+
+.gray,
+.gray:active {
+  color: #AAAAAA !important;
+  text-decoration: none;
+}
+
+.black,
+.black:active {
+  color: #282828 !important;
+  text-decoration: none;
+}

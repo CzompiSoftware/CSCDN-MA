@@ -1,0 +1,23 @@
+
+/*#region Footer*/
+div.content.container {
+    margin-bottom: calc(16px + 1rem + 32px) !important;
+  }
+  footer.copyright {
+    margin-bottom: 0px !important;
+    width: 100%;
+    background-color: rgba(10, 10, 10, 0.05);
+    background-image: url("../img/background-blue.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  
+    padding-top: 16px;
+    padding-bottom: 16px;
+    /*position: relative;
+    margin-top: calc(-64px - 1rem);
+    height: calc(64px + 1rem);
+    clear:both;*/
+  }
+  /*#endregion Footer*/
+  

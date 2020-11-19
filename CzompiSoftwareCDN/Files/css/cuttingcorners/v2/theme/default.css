@@ -1,0 +1,13 @@
+
+/*#region Root definitions*/
+:root {
+    --theme-color: var(--primary);
+    --theme-color-darker: var(--primary-darker);
+    --theme-button-text-color: var(--light);
+    --theme-text-color: var(--dark);
+}
+/*#endregion Root definitions*/
+
+* {
+    font-family: 'Comfortaa', cursive;
+}

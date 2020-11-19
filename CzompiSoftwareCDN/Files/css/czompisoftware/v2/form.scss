@@ -1,0 +1,40 @@
+input,
+input:focus {
+    --notchSize: 8px;
+    clip-path: polygon(
+      0% 0%,
+      calc(100% - var(--notchSize)) 0%,
+      100% var(--notchSize),
+      100% 100%,
+      var(--notchSize) 100%,
+      0% calc(100% - var(--notchSize))
+    );
+    border: 0px solid transparent !important;
+    border-radius: 0px !important;
+    background-color: #EAEAEA !important;
+    color: black !important;
+    box-shadow: 0 0 0 0 transparent !important;
+}
+input[type="email"],
+input[type="text"],
+input[type="password"] {
+    margin-bottom: 16px !important;
+    margin-top: 16px !important;
+}
+
+input[type="password"] {
+    margin-bottom: 16px !important;
+    margin-top: 16px !important;
+}
+
+.form-auth {
+  --notchSize: 8px;
+  clip-path: polygon(
+    0% 0%,
+    calc(100% - var(--notchSize)) 0%,
+    100% var(--notchSize),
+    100% 100%,
+    var(--notchSize) 100%,
+    0% calc(100% - var(--notchSize))
+  );
+}

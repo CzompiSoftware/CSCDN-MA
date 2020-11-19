@@ -1,0 +1,34 @@
+
+/*#region Card*/
+.card {
+    --notchSize: 8px;
+    clip-path: polygon(
+      calc(100% - var(--notchSize))  0%,
+      100% var(--notchSize),
+      100% 100%,
+      0% 100%,
+      0% 0%
+    );
+    border: 0px solid black;
+}
+.card > .card-header {
+border-bottom: 0px solid black;
+background-color: var(--theme-color);
+color: var(--theme-button-text-color);
+}
+
+.card > .card-body {
+border-left: 1px solid var(--theme-color);
+border-bottom: 1px solid var(--theme-color);
+border-right: 1px solid var(--theme-color);
+}
+
+div.name::before,
+div.price::before,
+div.programming-language::before,
+div.source::before,
+div.short-description::before {
+color: var(--disabled-color);
+}
+/*#endregion Card*/
+  

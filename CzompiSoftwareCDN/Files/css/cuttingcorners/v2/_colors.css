@@ -1,0 +1,26 @@
+
+:root {
+    --primary: #007BFF;
+    --primary-darker: #0069D9;
+  
+    --secondary: #6C757D;
+    --secondary-darker: #5A6268;
+  
+    --success: #28A745;
+    --success-darker: #218838;
+  
+    --danger: #DC3545;
+    --danger-darker: #C82333;
+  
+    --warning: #FFC107;
+    --warning-darker: #E0A800;
+  
+    --info: #17A2B8;
+    --info-darker: #138496;
+  
+    --light: #F8F9FA;
+    --light-darker: #E2E6EA;
+  
+    --dark: #343A40;
+    --dark-darker: #23272B;
+}  

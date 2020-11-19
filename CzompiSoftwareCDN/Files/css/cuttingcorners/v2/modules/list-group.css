@@ -1,0 +1,24 @@
+
+/*#region ListGroup modification*/
+.list-group-item {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+  
+  div.list-group-item:hover:not(.active),
+  div.list-group-item:hover:not(.active) * {
+    color: var(--theme-button-text-color) !important;
+  }
+  
+  div.list-group-item:hover {
+    background-color: var(--theme-color) !important;
+    color: var(--theme-button-text-color) !important;
+  }
+  
+  div.list-group-item.active,
+  div.list-group-item.active:hover {
+    background-color: transparent !important;
+    color: var(--theme-button-text-color) !important;
+  }
+  /*#endregion ListGroup modification*/
+  
