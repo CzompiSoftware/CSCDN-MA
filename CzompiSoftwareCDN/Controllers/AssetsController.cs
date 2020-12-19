@@ -35,7 +35,8 @@ namespace CzompiSoftwareCDN.Controllers
                 var assetType = Enum.Parse(typeof(AssetType), type, true);
                 if (Globals.Assets.ContainsKey(product.ToLower()))
                 {
-                    var fileName = Path.Combine("Files", assetType.ToString().ToLower(), Globals.Assets[product.ToLower()], remaining.Replace('/', Path.DirectorySeparatorChar));
+                    var fileName = System.IO.Path.GetFullPath(Path.Combine("..","data", assetType.ToString().ToLower(), Globals.Assets[product.ToLower()], remaining.Replace('/', Path.DirectorySeparatorChar)));
+                    Console.Out.WriteLine(fileName);
                     if(System.IO.File.Exists(fileName))
                     {
                         var res = new FileInfo(fileName);
