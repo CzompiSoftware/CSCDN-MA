@@ -2,7 +2,6 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
 WORKDIR /app
-VOLUME /data:/data
 EXPOSE 80
 EXPOSE 443
 
@@ -10,14 +9,14 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["CzompiSoftwareCDN/CzompiSoftwareCDN.csproj", "CzompiSoftwareCDN/"]
 RUN dotnet restore "CzompiSoftwareCDN/CzompiSoftwareCDN.csproj"
-COPY . .
-WORKDIR "/src/CzompiSoftwareCDN"
-RUN dotnet build "CzompiSoftwareCDN.csproj" -c Release -o /app/build
+WORKDIR "/src"
+COPY /src .
+RUN dotnet build "CzompiSoftwareCDN.csproj" -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "CzompiSoftwareCDN.csproj" -c Release -o /app/publish
+RUN dotnet publish "CzompiSoftwareCDN.csproj" -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "CzompiSoftwareCDN.dll"]
