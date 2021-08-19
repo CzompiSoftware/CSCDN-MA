@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace CzompiSoftwareCDN.Controllers
+﻿namespace CzompiSoftwareCDN.Controllers
 {
-    public class Assets: Dictionary<string, string>
+    public class Assets : Dictionary<string, string>
     {
     }
 }

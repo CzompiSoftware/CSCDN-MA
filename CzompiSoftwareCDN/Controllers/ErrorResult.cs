@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace CzompiSoftwareCDN.Controllers
 {

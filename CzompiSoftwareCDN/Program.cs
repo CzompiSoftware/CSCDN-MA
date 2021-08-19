@@ -42,7 +42,7 @@ namespace CzompiSoftwareCDN
             }
             Globals.EnabledHosts = JsonSerializer.Deserialize<EnabledHosts>(File.ReadAllText(Globals.EnabledHostsFile));
             #endregion
-            
+
             #region Globals.Config
             if (!File.Exists(Globals.ConfigFile))
             {
@@ -115,7 +115,7 @@ namespace CzompiSoftwareCDN
             try
             {
                 Log.Information("Starting host...");
-                
+
                 Log.Information($" ---------------- Czompi Software CDN ------------------");
                 Log.Information($"  Version: \"{Globals.ApiInformation.Version}\"");
                 Log.Information($"  Build: \"{Globals.ApiInformation.Build}\"");

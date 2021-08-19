@@ -1,6 +1,6 @@
 ﻿namespace CzompiSoftwareCDN
 {
-    public class EnabledHosts: Dictionary<string, List<string>>
+    public class EnabledHosts : Dictionary<string, List<string>>
     {
     }
 }
