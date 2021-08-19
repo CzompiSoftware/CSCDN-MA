@@ -6,6 +6,6 @@
         JS,
         IMG,
         FONTS,
-
+        FONT
     }
 }

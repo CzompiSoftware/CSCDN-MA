@@ -1,0 +1,10 @@
+{
+  "*": [
+    "https://czompisoftware.hu",
+    "https://beta.czompisoftware.hu",
+    "https://*.czompisoftware.hu",
+    "https://czompi.hu",
+    "https://beta.czompi.hu",
+    "https://*.czompi.hu"
+  ]
+}
