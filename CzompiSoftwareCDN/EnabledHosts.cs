@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CzompiSoftwareCDN
+namespace CSCDNMA
 {
     public class EnabledHosts : Dictionary<string, List<string>>
     {

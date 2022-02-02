@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace CzompiSoftwareCDN.Controllers
+namespace CSCDNMA.Controllers
 {
     //[Route("[controller]")]
     [ApiController]
@@ -60,7 +60,7 @@ namespace CzompiSoftwareCDN.Controllers
             }
 
             string currentPath = $"{Request.Headers[":Path"].FirstOrDefault()}";
-#endregion
+            #endregion
 
             var json = $"{JsonSerializer.Serialize(Request.Headers, Globals.JsonSerializerOptions)}";
 
@@ -81,7 +81,7 @@ namespace CzompiSoftwareCDN.Controllers
                 }
             }
 
-#region Handle response
+            #region Handle response
             if (type == null || product == null || remaining == null)
             {
                 _logger.LogError($"{clientInfo} | {bareFileName} | AccessForbidden");
@@ -117,7 +117,7 @@ namespace CzompiSoftwareCDN.Controllers
                 _logger.LogError($"{clientInfo} | {bareFileName} | {ex}");
                 return StatusCode(415, Globals.Error.UnsupportedAssetType);
             }
-#endregion
+            #endregion
 
         }
     }

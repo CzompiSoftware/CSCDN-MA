@@ -1,8 +1,8 @@
-﻿using CzompiSoftwareCDN.Model;
+﻿using CSCDNMA;
 using System.IO;
 using System.Text.Json;
 
-namespace CzompiSoftwareCDN.Controllers
+namespace CSCDNMA.Controllers
 {
     internal class Globals
     {

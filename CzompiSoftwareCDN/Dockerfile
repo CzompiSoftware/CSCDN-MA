@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
 
 ENV \
     # CSCDN-MA version
-    CSCDNMA_VERSION=1.0.0-build08
+    CSCDNMA_VERSION=1.0.0-build10
 
 VOLUME [ "/data" ]
 

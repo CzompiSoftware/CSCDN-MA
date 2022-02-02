@@ -1,4 +1,4 @@
-﻿namespace CzompiSoftwareCDN.Controllers
+﻿namespace CSCDNMA.Controllers
 {
     public enum AssetType
     {

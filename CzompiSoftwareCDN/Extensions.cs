@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.StaticFiles;
 using System.IO;
 
-namespace CzompiSoftwareCDN
+namespace CSCDNMA
 {
     public static class Extensions
     {

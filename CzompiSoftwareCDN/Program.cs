@@ -1,4 +1,4 @@
-using CzompiSoftwareCDN.Controllers;
+using CSCDNMA.Controllers;
 using CzompiSoftwareCDN.Model;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -12,7 +12,7 @@ using System.IO;
 using System.Reflection;
 using System.Text.Json;
 
-namespace CzompiSoftwareCDN
+namespace CSCDNMA
 {
     public class Program
     {

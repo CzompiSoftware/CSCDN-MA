@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CzompiSoftwareCDN.Controllers
+namespace CSCDNMA.Controllers
 {
     public class Config
     {

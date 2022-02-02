@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CzompiSoftwareCDN.Controllers
+namespace CSCDNMA.Controllers
 {
     public class Assets : Dictionary<string, string>
     {

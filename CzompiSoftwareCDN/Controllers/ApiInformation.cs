@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CzompiSoftwareCDN.Model
+namespace CSCDNMA.Controllers
 {
     internal class ApiInformation
     {
