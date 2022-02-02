@@ -1,9 +1,14 @@
 using CzompiSoftwareCDN.Controllers;
 using CzompiSoftwareCDN.Model;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Text.Json;
 
@@ -73,7 +78,7 @@ namespace CzompiSoftwareCDN
                 StartTime = DateTime.Parse(appProcess.StartTime.ToString("yyyy'.'MM'.'dd'T'HH':'mm':'ss")),
                 Id = Globals.Config.AppGuid,
                 CompileTime = Builtin.CompileTime,
-                Version = $"{appAssembly.Version.ToString(2)}-{appAssembly.Version.Revision:0000}"
+                Version = $"{appAssembly.Version.ToString(3)}-build{appAssembly.Version.Revision:00}"
             };
             #endregion
             #endregion

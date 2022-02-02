@@ -1,5 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace CzompiSoftwareCDN.Controllers
 {
@@ -33,7 +38,13 @@ namespace CzompiSoftwareCDN.Controllers
         {
 
             #region Definitions
-            string ip = Request.Headers["cf-connecting-ip"].FirstOrDefault(), referer = Request.Headers.Referer.FirstOrDefault();
+            string ip = Request.Headers["cf-connecting-ip"].FirstOrDefault(), referer =
+#if NET6_0_OR_GREATER
+                Request.Headers.Referer.FirstOrDefault()
+#else
+                Request.Headers["Referer"].ToString()
+#endif
+                ;
             Globals.EnabledHosts = JsonSerializer.Deserialize<EnabledHosts>(System.IO.File.ReadAllText(Globals.EnabledHostsFile));
 
             string bareFileName = "", clientInfo = $"{ip} | {referer} | {Request.Headers["X-WAWS-Unencoded-URL"].FirstOrDefault()}";
@@ -49,7 +60,7 @@ namespace CzompiSoftwareCDN.Controllers
             }
 
             string currentPath = $"{Request.Headers[":Path"].FirstOrDefault()}";
-            #endregion
+#endregion
 
             var json = $"{JsonSerializer.Serialize(Request.Headers, Globals.JsonSerializerOptions)}";
 
@@ -70,7 +81,7 @@ namespace CzompiSoftwareCDN.Controllers
                 }
             }
 
-            #region Handle response
+#region Handle response
             if (type == null || product == null || remaining == null)
             {
                 _logger.LogError($"{clientInfo} | {bareFileName} | AccessForbidden");
@@ -106,7 +117,7 @@ namespace CzompiSoftwareCDN.Controllers
                 _logger.LogError($"{clientInfo} | {bareFileName} | {ex}");
                 return StatusCode(415, Globals.Error.UnsupportedAssetType);
             }
-            #endregion
+#endregion
 
         }
     }

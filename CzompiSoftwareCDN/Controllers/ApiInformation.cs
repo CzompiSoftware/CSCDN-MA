@@ -1,4 +1,6 @@
-﻿namespace CzompiSoftwareCDN.Model
+﻿using System;
+
+namespace CzompiSoftwareCDN.Model
 {
     internal class ApiInformation
     {

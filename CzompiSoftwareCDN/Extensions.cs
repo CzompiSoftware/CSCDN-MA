@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.StaticFiles;
+using System.IO;
 
 namespace CzompiSoftwareCDN
 {

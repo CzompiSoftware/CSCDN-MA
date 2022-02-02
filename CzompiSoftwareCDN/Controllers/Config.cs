@@ -1,4 +1,6 @@
-﻿namespace CzompiSoftwareCDN.Controllers
+﻿using System;
+
+namespace CzompiSoftwareCDN.Controllers
 {
     public class Config
     {
