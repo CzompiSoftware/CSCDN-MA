@@ -85,12 +85,7 @@ namespace CSCDNMA
 
             #region Logger
             Log.Logger = new LoggerConfiguration()
-                // .MinimumLevel.Debug()
-                // .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                // .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Warning)
-                // .MinimumLevel.Override("System", LogEventLevel.Warning)
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-                // .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
                 .WriteTo.File(
                     Path.Combine(Globals.LogsDirectory, @$"{Assembly.GetExecutingAssembly().GetName().Name}-{DateTime.Now:yyyy'.'MM'.'dd}.log"),

@@ -6,7 +6,7 @@
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<Configurations>Release;Staging;Beta</Configurations>
 		<RootNamespace>CSCDNMA</RootNamespace>
-		<Version>1.0.0.9</Version>
+		<Version>1.0.0.10</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
