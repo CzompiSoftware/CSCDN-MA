@@ -2,7 +2,6 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net6.0</TargetFrameworks>
-		<UserSecretsId>8b848b7f-0764-4a78-b7c9-6134d87196d0</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<Configurations>Release;Staging;Beta</Configurations>
 		<RootNamespace>CSCDNMA</RootNamespace>
@@ -10,8 +9,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.10" />
-		<PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+		<PackageReference Include="CzomPack" Version="3.0.7.2" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+		<PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
 	</ItemGroup>
 
 
