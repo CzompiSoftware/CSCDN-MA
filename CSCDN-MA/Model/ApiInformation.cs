@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CSCDNMA.Controllers
+namespace CSCDNMA.Model
 {
     internal class ApiInformation
     {

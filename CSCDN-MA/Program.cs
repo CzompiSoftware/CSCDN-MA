@@ -20,51 +20,9 @@ public class Program
         CzomPack.Settings.Application = new(Assembly.GetExecutingAssembly());
         CzomPack.Settings.WorkingDirectory = Globals.DataDirectory;
 
-        #region Globals
-        #region Globals.Assets
-        if (!File.Exists(Globals.ProductsFile))
-        {
-            File.WriteAllText(Globals.ProductsFile, JsonSerializer.Serialize(new Assets(), Globals.JsonSerializerOptions));
-        }
-        Globals.Assets = JsonSerializer.Deserialize<Assets>(File.ReadAllText(Globals.ProductsFile));
-        #endregion
-
-        #region Globals.EnabledHosts
-        if (!File.Exists(Globals.EnabledHostsFile))
-        {
-            EnabledHosts enabledHosts = new();
-            enabledHosts.Add("/path/to/asset", new List<string> {
-                "https://assetdomain.tld",
-            });
-            enabledHosts.Add("*", new List<string> {
-                "https://czompisoftware.hu",
-                "https://beta.czompisoftware.hu",
-                "https://*.czompisoftware.hu",
-                "https://czompi.hu",
-                "https://beta.czompi.hu",
-                "https://*.czompi.hu",
-            });
-            File.WriteAllText(Globals.EnabledHostsFile, JsonSerializer.Serialize(enabledHosts, Globals.JsonSerializerOptions));
-        }
-        Globals.EnabledHosts = JsonSerializer.Deserialize<EnabledHosts>(File.ReadAllText(Globals.EnabledHostsFile));
-        #endregion
-
-        #region Globals.Config
-        if (!File.Exists(Globals.ConfigFile))
-        {
-            File.WriteAllText(Globals.ConfigFile, JsonSerializer.Serialize(new Config
-            {
-                AppGuid = Guid.NewGuid(),
-                DeployTime = DateTime.Parse(DateTime.Now.ToString("yyyy'.'MM'.'dd'T'HH':'mm':'ss"))
-            }, Globals.JsonSerializerOptions));
-        }
-        Globals.Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(Globals.ConfigFile));
-        #endregion
-
-        #region Globals.ApiInformation
+        #region ApiInformation
         var appProcess = Process.GetCurrentProcess();
         Globals.ApiInformation = new(appProcess.StartTime);
-        #endregion
         #endregion
 
         #region Logger
@@ -80,7 +38,7 @@ public class Program
             Log.Information($"  Version: \"{Globals.ApiInformation.Version}\"");
             Log.Information($"  Build: \"{Globals.ApiInformation.Build}\"");
             Log.Information($"  ApplicationId: \"{Globals.ApiInformation.Id}\"");
-            Log.Information($"  DeployTime: \"{Globals.Config.DeployTime:yyyy'.'MM'.'dd'T'HH':'mm':'ss}\"");
+            Log.Information($"  CompileTime: \"{Globals.ApiInformation.CompileTime:yyyy'.'MM'.'dd'T'HH':'mm':'ss}\"");
             Log.Information($" -------------------------------------------------------");
             CreateHostBuilder(args).Build().Run();
             //return 0;

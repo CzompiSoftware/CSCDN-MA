@@ -1,4 +1,5 @@
 ﻿using CSCDNMA;
+using CSCDNMA.Model;
 using System.IO;
 using System.Text.Json;
 
@@ -47,9 +48,7 @@ namespace CSCDNMA
             AllowTrailingCommas = true,
         };
 
-        public static Config Config { get; internal set; }
         public static ApiInformation ApiInformation { get; internal set; }
-        public static EnabledHosts EnabledHosts { get; internal set; }
 
         public class Error
         {
