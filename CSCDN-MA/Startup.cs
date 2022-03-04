@@ -1,6 +1,7 @@
 using CSCDNMA.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,7 +18,15 @@ namespace CSCDNMA
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContext<SettingsContext>();
+
+            //var db = args.Any() && args.ContainsName("connectionString") ? args.WithName("connectionString") : builder.Configuration["CzSoftDatabase"];
+
+            services.AddDbContext<CzSoftCDNDatabaseContext>(options =>
+            {
+                //options.UseSqlServer(db);
+                options.UseSqlServer("Data Source=srv;Initial Catalog=dbname;Persist Security Info=True;User ID=userid;Password=securepass");
+            }, contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Singleton);
+
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>

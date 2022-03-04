@@ -1,4 +1,5 @@
 using CzomPack.Attributes;
+using CzomPack.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -34,14 +35,14 @@ public partial class Program
         #region Start app
         try
         {
-            Log.Information("Starting host...");
+            Logger.Info("Starting host...");
 
-            Log.Information($" ---------------- Czompi Software CDN ------------------");
-            Log.Information($"  Version: \"{Globals.ApiInformation.Version}\"");
-            Log.Information($"  Build: \"{Globals.ApiInformation.Build}\"");
-            Log.Information($"  ApplicationId: \"{Globals.ApiInformation.Id}\"");
-            Log.Information($"  CompileTime: \"{Globals.ApiInformation.CompileTime:yyyy'.'MM'.'dd'T'HH':'mm':'ss}\"");
-            Log.Information($" -------------------------------------------------------");
+            Logger.Info($" ---------------- Czompi Software CDN ------------------");
+            Logger.Info($"  Version: \"{Globals.ApiInformation.Version}\"");
+            Logger.Info($"  Build: \"{Globals.ApiInformation.Build}\"");
+            Logger.Info($"  ApplicationId: \"{Globals.ApiInformation.Id}\"");
+            Logger.Info($"  CompileTime: \"{Globals.ApiInformation.CompileTime:yyyy'.'MM'.'dd'T'HH':'mm':'ss}\"");
+            Logger.Info($" -------------------------------------------------------");
             CreateHostBuilder(args.GetArgumentList()).Build().Run();
             //return 0;
         }

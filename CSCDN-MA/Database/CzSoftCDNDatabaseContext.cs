@@ -10,11 +10,11 @@ using System.Text.Json;
 
 namespace CSCDNMA.Database;
 
-public class SettingsContext : DbContext
+public class CzSoftCDNDatabaseContext : DbContext
 {
     public string ConnectionString { get; } = null;
 
-    public SettingsContext([NotNull] DbContextOptions options, string connectionString) : base(options)
+    public CzSoftCDNDatabaseContext([NotNull] DbContextOptions options, string connectionString) : base(options)
     {
         ConnectionString = connectionString;
     }
