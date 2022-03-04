@@ -16,11 +16,11 @@ namespace CSCDNMA.Model
             Type = "INVLAID";
 #endif
             Build = Builtin.BuildId;
-            StartTime = DateTime.Parse(appProcess.StartTime.ToString("yyyy'.'MM'.'dd'T'HH':'mm':'ss"));
-            Id = Globals.Config.AppGuid;
+            StartTime = DateTime.Parse(startTime.ToString("yyyy'.'MM'.'dd'T'HH':'mm':'ss"));
+            Id = Guid.NewGuid(); // Use app param as guid or create a new one when not set. 
             CompileTime = Builtin.CompileTime;
-            var ver = new Version(CzomPack.Settings.Application.Version);
-            Version = $"{ver.ToString(3)}-build{ver.Revision:00}";
+            //var ver = CzomPack.Settings.Application.Assembly.GetName().Version;
+            //Version = $"{ver.ToString(3)}-build{ver.Revision:00}";
         }
 
         public Guid Id { get; internal set; }

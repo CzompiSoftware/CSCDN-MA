@@ -1,4 +1,4 @@
-using CSCDNMA.Controllers;
+using CzomPack.Attributes;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -13,20 +13,22 @@ using System.Text.Json;
 
 namespace CSCDNMA;
 
-public class Program
+[Executable]
+public partial class Program
 {
-    public static void Main(string[] args)
+    static partial void Main(Arguments args)
     {
         CzomPack.Settings.Application = new(Assembly.GetExecutingAssembly());
         CzomPack.Settings.WorkingDirectory = Globals.DataDirectory;
+        Console.WriteLine(CzomPack.Settings.WorkingDirectory);
+
+        #region Logger
+        Log.Logger = CzomPack.Logging.Logger.GetLogger();
+        #endregion
 
         #region ApiInformation
         var appProcess = Process.GetCurrentProcess();
         Globals.ApiInformation = new(appProcess.StartTime);
-        #endregion
-
-        #region Logger
-        Log.Logger = CzomPack.Logging.Logger.GetLogger();
         #endregion
 
         #region Start app
@@ -40,7 +42,7 @@ public class Program
             Log.Information($"  ApplicationId: \"{Globals.ApiInformation.Id}\"");
             Log.Information($"  CompileTime: \"{Globals.ApiInformation.CompileTime:yyyy'.'MM'.'dd'T'HH':'mm':'ss}\"");
             Log.Information($" -------------------------------------------------------");
-            CreateHostBuilder(args).Build().Run();
+            CreateHostBuilder(args.GetArgumentList()).Build().Run();
             //return 0;
         }
         catch (Exception ex)

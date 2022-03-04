@@ -36,9 +36,9 @@ namespace CSCDNMA
             }
         }
         #endregion
-        //public static string ProductsFile => Path.Combine(DataDirectory, "products.json");
+        public static string ProductsFile => Path.Combine(DataDirectory, "products.json");
         public static string ConfigFile => Path.Combine(DataDirectory, "config.json");
-        //public static string EnabledHostsFile => Path.Combine(DataDirectory, "enabledhosts.json");
+        public static string EnabledHostsFile => Path.Combine(DataDirectory, "enabledhosts.json");
         public static string DataSourceFile => Path.Combine(DataDirectory, "settings.db");
 
         //public static Assets Assets { get; set; }
