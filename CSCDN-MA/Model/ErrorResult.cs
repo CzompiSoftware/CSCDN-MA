@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CSCDNMA.Controllers
+namespace CSCDNMA.Model
 {
     public struct ErrorResult
     {

@@ -1,8 +1,9 @@
 ﻿using CSCDNMA;
+using CSCDNMA.Model;
 using System.IO;
 using System.Text.Json;
 
-namespace CSCDNMA.Controllers
+namespace CSCDNMA
 {
     internal class Globals
     {
@@ -38,17 +39,16 @@ namespace CSCDNMA.Controllers
         public static string ProductsFile => Path.Combine(DataDirectory, "products.json");
         public static string ConfigFile => Path.Combine(DataDirectory, "config.json");
         public static string EnabledHostsFile => Path.Combine(DataDirectory, "enabledhosts.json");
+        public static string DataSourceFile => Path.Combine(DataDirectory, "settings.db");
 
-        public static Assets Assets { get; set; }
+        //public static Assets Assets { get; set; }
         public static JsonSerializerOptions JsonSerializerOptions => new()
         {
             WriteIndented = true,
             AllowTrailingCommas = true,
         };
 
-        public static Config Config { get; internal set; }
         public static ApiInformation ApiInformation { get; internal set; }
-        public static EnabledHosts EnabledHosts { get; internal set; }
 
         public class Error
         {

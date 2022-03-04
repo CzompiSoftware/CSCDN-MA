@@ -1,22 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CSCDNMA.Database;
+using CSCDNMA.Model;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CSCDNMA.Controllers
 {
-    //[Route("[controller]")]
     [ApiController]
     public class AssetsController : ControllerBase
     {
         private readonly ILogger<AssetsController> _logger;
+        private readonly CzSoftCDNDatabaseContext _settings;
 
-        public AssetsController(ILogger<AssetsController> logger)
+        public AssetsController(ILogger<AssetsController> logger, CzSoftCDNDatabaseContext settings)
         {
             _logger = logger;
+            _settings = settings;
         }
 
         [HttpGet]
@@ -45,8 +49,6 @@ namespace CSCDNMA.Controllers
                 Request.Headers["Referer"].ToString()
 #endif
                 ;
-            Globals.EnabledHosts = JsonSerializer.Deserialize<EnabledHosts>(System.IO.File.ReadAllText(Globals.EnabledHostsFile));
-
             string bareFileName = "", clientInfo = $"{ip} | {referer} | {Request.Headers["X-WAWS-Unencoded-URL"].FirstOrDefault()}";
 
             try
@@ -64,22 +66,23 @@ namespace CSCDNMA.Controllers
 
             var json = $"{JsonSerializer.Serialize(Request.Headers, Globals.JsonSerializerOptions)}";
 
-            if (Globals.EnabledHosts.ContainsKey(currentPath))
+            if (_settings.AssetConfig.Any(itm => new Regex(itm.AssetRoute).IsMatch(currentPath)))
             {
-                if (!Globals.EnabledHosts[currentPath].Where(x => (referer ?? "").StartsWith(x ?? "", StringComparison.OrdinalIgnoreCase)).Any())
+                var itm = _settings.AssetConfig.First(itm => new Regex(itm.AssetRoute).IsMatch(currentPath));
+                if (!new Regex(itm.RequestRoute).IsMatch(referer))
                 {
                     _logger.LogError($"{clientInfo} | {bareFileName} | AccessForbidden");
                     return StatusCode(403, Globals.Error.AccessForbidden);
                 }
             }
-            else if (Globals.EnabledHosts.ContainsKey("*"))
-            {
-                if (!Globals.EnabledHosts["*"].Where(x => (referer ?? "").StartsWith(x ?? "", StringComparison.OrdinalIgnoreCase)).Any())
-                {
-                    _logger.LogError($"{clientInfo} | {bareFileName} | AccessForbidden");
-                    return StatusCode(403, Globals.Error.AccessForbidden);
-                }
-            }
+            //else if (Globals.EnabledHosts.ContainsKey("*"))
+            //{
+            //    if (!Globals.EnabledHosts["*"].Where(x => (referer ?? "").StartsWith(x ?? "", StringComparison.OrdinalIgnoreCase)).Any())
+            //    {
+            //        _logger.LogError($"{clientInfo} | {bareFileName} | AccessForbidden");
+            //        return StatusCode(403, Globals.Error.AccessForbidden);
+            //    }
+            //}
 
             #region Handle response
             if (type == null || product == null || remaining == null)
@@ -91,9 +94,10 @@ namespace CSCDNMA.Controllers
             try
             {
                 var assetType = Enum.Parse(typeof(AssetType), type, true);
-                if (Globals.Assets.ContainsKey(product.ToLower()))
+                var prod = _settings.Products.First(prod => prod.Id.ToString().Replace("-", "").ToLower().Equals(product.ToLower()));
+                if (prod is not null)
                 {
-                    var fileName = Path.GetFullPath(Path.Combine(Globals.AssetsDirectory, assetType.ToString().ToLower(), Globals.Assets[product.ToLower()], remaining.Replace('/', Path.DirectorySeparatorChar)));
+                    var fileName = Path.GetFullPath(Path.Combine(Globals.AssetsDirectory, assetType.ToString().ToLower(), prod.Name, remaining.Replace('/', Path.DirectorySeparatorChar)));
                     //_logger.LogInformation($"{JsonSerializer.Serialize(Request.Headers, Globals.JsonSerializerOptions)} | {fileName}");
                     if (System.IO.File.Exists(fileName))
                     {
