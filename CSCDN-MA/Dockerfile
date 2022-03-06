@@ -1,6 +1,10 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
 
 ENV \
+    # Application guid
+    APPLICATION_GUID = "" \
+    # Connection string
+    CONNECTION_STRING = "" \
     # CSCDN-MA version
     CSCDNMA_VERSION=1.0.0-build10
 
@@ -13,4 +17,4 @@ RUN wget https://packages.czompi.cloud/products/czsoft/cscdn-ma/$CSCDNMA_VERSION
     && rm cscdn-ma.tar.gz
 WORKDIR /bin
 EXPOSE 80
-ENTRYPOINT ["dotnet", "CSCDN-MA.dll"]
+ENTRYPOINT dotnet "CSCDN-MA.dll" "--connectionString $CONNECTION_STRING --appGuid $APPLICATION_GUID"
