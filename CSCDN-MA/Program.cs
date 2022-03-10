@@ -58,6 +58,8 @@ public partial class Program
             Logger.Info($" -------------------------------------------------------");
 
             var builder = WebApplication.CreateBuilder(args.GetArgumentList());
+            
+            builder.Host.UseSerilog(Logger.GetLogger());
 
             var db = args.Any() && args.ContainsName("connectionString") ? args.WithName("connectionString") : builder.Configuration["CzSoftDatabase"];
 
@@ -76,7 +78,7 @@ public partial class Program
 
 
             builder.Services.AddControllers();
-
+            
             var app = builder.Build();
 
 
@@ -84,7 +86,6 @@ public partial class Program
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseRouting();
 
             app.UseCors();

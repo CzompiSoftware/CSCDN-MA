@@ -29,29 +29,9 @@ public class CzSoftCDNDatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //modelBuilder.Entity<Product>().Property(e => e.Id).HasConversion(to => to.ToString(), from => Guid.Parse(from));
-        //modelBuilder.Entity<AccessConfigItem>().Property(e => e.ProductId).HasConversion(to => to.ToString(), from => Guid.Parse(from));
     }
 
     public DbSet<Product> Products { get; set; }
     public DbSet<AccessConfigItem> AccessConfig { get; set; }
 
-    //protected override void OnModelCreating(ModelBuilder modelBuilder)
-    //{
-    //    base.OnModelCreating(modelBuilder);
-    //    try
-    //    {
-    //        if (File.Exists(Globals.ProductsFile))
-    //        {
-    //            var prods = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(Globals.ProductsFile)).Select(itm => new Product { Id = itm.Key, Name = itm.Value }).ToList();
-    //            Products.AddRange(prods);
-    //            this.SaveChanges();
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Logger.Error($"{ex}");
-    //    }
-    //}
-    public DbSet<AccessConfigItem> AccessConfig { get; set; }
 }
