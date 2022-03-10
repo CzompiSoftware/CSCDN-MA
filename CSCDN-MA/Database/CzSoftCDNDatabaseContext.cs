@@ -14,9 +14,12 @@ public class CzSoftCDNDatabaseContext : DbContext
 {
     public string ConnectionString { get; } = null;
 
-    public CzSoftCDNDatabaseContext([NotNull] DbContextOptions options, string connectionString) : base(options)
+    public CzSoftCDNDatabaseContext(string connectionString) : base()
     {
         ConnectionString = connectionString;
+    }
+    public CzSoftCDNDatabaseContext([NotNull] DbContextOptions options) : base(options)
+    {
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -26,12 +29,12 @@ public class CzSoftCDNDatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Product>().Property(e => e.Id).HasConversion(to => to.ToString(), from => Guid.Parse(from));
-        modelBuilder.Entity<AssetConfigItem>().Property(e => e.ProductId).HasConversion(to => to.ToString(), from => Guid.Parse(from));
+        //modelBuilder.Entity<Product>().Property(e => e.Id).HasConversion(to => to.ToString(), from => Guid.Parse(from));
+        //modelBuilder.Entity<AccessConfigItem>().Property(e => e.ProductId).HasConversion(to => to.ToString(), from => Guid.Parse(from));
     }
 
     public DbSet<Product> Products { get; set; }
-    public DbSet<AssetConfigItem> AssetConfig { get; set; }
+    public DbSet<AccessConfigItem> AccessConfig { get; set; }
 
     //protected override void OnModelCreating(ModelBuilder modelBuilder)
     //{

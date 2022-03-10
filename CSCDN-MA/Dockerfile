@@ -21,4 +21,4 @@ RUN wget https://packages.czompi.cloud/products/czsoft/cscdn-ma/$CSCDNMA_VERSION
     && rm cscdn-ma.tar.gz
 WORKDIR /bin
 EXPOSE 80
-ENTRYPOINT ["dotnet", "CSCDN-MA.dll"]
+ENTRYPOINT dotnet "CSCDN-MA.dll" "--connectionString $CONNECTION_STRING --appGuid $APPLICATION_GUID"
