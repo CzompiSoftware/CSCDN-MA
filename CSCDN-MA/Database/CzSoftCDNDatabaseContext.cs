@@ -29,6 +29,7 @@ public class CzSoftCDNDatabaseContext : DbContext
         modelBuilder.Entity<Product>().Property(e => e.Id).HasConversion(to => to.ToString(), from => Guid.Parse(from));
         modelBuilder.Entity<AssetConfigItem>().Property(e => e.ProductId).HasConversion(to => to.ToString(), from => Guid.Parse(from));
     }
+
     public DbSet<Product> Products { get; set; }
     public DbSet<AssetConfigItem> AssetConfig { get; set; }
 
@@ -49,4 +50,5 @@ public class CzSoftCDNDatabaseContext : DbContext
     //        Logger.Error($"{ex}");
     //    }
     //}
+    public DbSet<AccessConfigItem> AccessConfig { get; set; }
 }
