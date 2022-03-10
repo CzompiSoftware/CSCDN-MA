@@ -17,7 +17,7 @@ namespace CSCDNMA.Controllers
         private readonly ILogger<AssetsController> _logger;
         private readonly CzSoftCDNDatabaseContext _settings;
 
-        public AssetsController(ILogger<AssetsController> logger, CzSoftCDNDatabaseContext settings)
+        public AssetsController(CzSoftCDNDatabaseContext settings, ILogger<AssetsController> logger)
         {
             _logger = logger;
             _settings = settings;
@@ -65,24 +65,39 @@ namespace CSCDNMA.Controllers
             #endregion
 
             var json = $"{JsonSerializer.Serialize(Request.Headers, Globals.JsonSerializerOptions)}";
-
-            if (_settings.AssetConfig.Any(itm => new Regex(itm.AssetRoute).IsMatch(currentPath)))
+            var lst = _settings.AccessConfig.ToList().Where(itm => itm.ProductId is not null && itm.ProductId.ToString().ToLowerInvariant().Equals(product?.ToLowerInvariant())).ToList();
+            if (!lst.Any())
             {
-                var itm = _settings.AssetConfig.First(itm => new Regex(itm.AssetRoute).IsMatch(currentPath));
-                if (!new Regex(itm.RequestRoute).IsMatch(referer))
+                var wildcard = _settings.AccessConfig.Where(itm => itm.ProductId == null).ToList();
+                // deny access when request route is not match the regex value or is not a wildcard.
+                if (!wildcard.Any() || (wildcard.Any() && !wildcard.First().RequestRoute.Equals("*") && !new Regex(wildcard.First().RequestRoute).IsMatch(referer ?? "")))
                 {
                     _logger.LogError($"{clientInfo} | {bareFileName} | AccessForbidden");
                     return StatusCode(403, Globals.Error.AccessForbidden);
                 }
             }
-            //else if (Globals.EnabledHosts.ContainsKey("*"))
-            //{
-            //    if (!Globals.EnabledHosts["*"].Where(x => (referer ?? "").StartsWith(x ?? "", StringComparison.OrdinalIgnoreCase)).Any())
-            //    {
-            //        _logger.LogError($"{clientInfo} | {bareFileName} | AccessForbidden");
-            //        return StatusCode(403, Globals.Error.AccessForbidden);
-            //    }
-            //}
+            // When the asset route is a wildcard value
+            else if (lst.Any(itm => itm.AssetRoute.Equals("*"))) 
+            {
+                var itm = lst.First(itm => itm.AssetRoute.Equals("*"));
+                // deny access when request route is not match the regex value or is not a wildcard.
+                if (!itm.RequestRoute.Equals("*") && !new Regex(itm.RequestRoute).IsMatch(referer ?? "")) 
+                {
+                    _logger.LogError($"{clientInfo} | {bareFileName} | AccessForbidden");
+                    return StatusCode(403, Globals.Error.AccessForbidden);
+                }
+            }
+            // When the asset route is matching the regex value
+            else if (lst.Any(itm => new Regex(itm.AssetRoute).IsMatch(currentPath))) 
+            {
+                var itm = lst.First(itm => new Regex(itm.AssetRoute).IsMatch(currentPath));
+                // deny access when request route is not match the regex value or is not a wildcard.
+                if (!itm.RequestRoute.Equals("*") && !new Regex(itm.RequestRoute).IsMatch(referer ?? ""))
+                {
+                    _logger.LogError($"{clientInfo} | {bareFileName} | AccessForbidden");
+                    return StatusCode(403, Globals.Error.AccessForbidden);
+                }
+            }
 
             #region Handle response
             if (type == null || product == null || remaining == null)
@@ -94,7 +109,8 @@ namespace CSCDNMA.Controllers
             try
             {
                 var assetType = Enum.Parse(typeof(AssetType), type, true);
-                var prod = _settings.Products.First(prod => prod.Id.ToString().Replace("-", "").ToLower().Equals(product.ToLower()));
+                var prods = _settings.Products.ToList();
+                var prod = _settings.Products.ToList().First(prod => prod.Id.ToString().ToLowerInvariant().Equals(product.ToLowerInvariant()));
                 if (prod is not null)
                 {
                     var fileName = Path.GetFullPath(Path.Combine(Globals.AssetsDirectory, assetType.ToString().ToLower(), prod.Name, remaining.Replace('/', Path.DirectorySeparatorChar)));

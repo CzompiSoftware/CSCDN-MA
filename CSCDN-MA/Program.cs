@@ -1,6 +1,9 @@
+using CSCDNMA.Database;
 using CzomPack.Attributes;
 using CzomPack.Logging;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
@@ -28,8 +31,18 @@ public partial class Program
         #endregion
 
         #region ApiInformation
+        Guid appGuid;
+        try
+        {
+            appGuid = args.Any() && args.ContainsName("appGuid") ? Guid.Parse(args.WithName("appGuid")) : Guid.NewGuid();
+        }
+        catch (Exception)
+        {
+            appGuid = Guid.NewGuid();
+        }
+
         var appProcess = Process.GetCurrentProcess();
-        Globals.ApiInformation = new(appProcess.StartTime);
+        Globals.ApiInformation = new(appGuid, appProcess.StartTime);
         #endregion
 
         #region Start app
@@ -43,13 +56,50 @@ public partial class Program
             Logger.Info($"  ApplicationId: \"{Globals.ApiInformation.Id}\"");
             Logger.Info($"  CompileTime: \"{Globals.ApiInformation.CompileTime:yyyy'.'MM'.'dd'T'HH':'mm':'ss}\"");
             Logger.Info($" -------------------------------------------------------");
-            CreateHostBuilder(args.GetArgumentList()).Build().Run();
-            //return 0;
+
+            var builder = WebApplication.CreateBuilder(args.GetArgumentList());
+
+            var db = args.Any() && args.ContainsName("connectionString") ? args.WithName("connectionString") : builder.Configuration["CzSoftDatabase"];
+
+            builder.Services.AddDbContext<CzSoftCDNDatabaseContext>(options =>
+            {
+                options.UseSqlServer(db);
+            });
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.AllowAnyOrigin();
+                });
+            });
+
+
+            builder.Services.AddControllers();
+
+            var app = builder.Build();
+
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseRouting();
+
+            app.UseCors();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+            app.Run();
         }
         catch (Exception ex)
         {
             Log.Fatal(ex, "Host terminated unexpectedly.");
-            //return 1;
         }
         finally
         {
@@ -58,13 +108,4 @@ public partial class Program
         #endregion
     }
 
-    #region CreateHostBuilder
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .UseSerilog()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
-    #endregion
 }

@@ -1,4 +1,5 @@
 {
+  "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
@@ -7,20 +8,19 @@
       "sslPort": 44347
     }
   },
-  "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
+      "commandLineArgs": "--connectionString Data Source=eu-central-0.czompi.cloud;Initial Catalog=CzSoft.CDN;Persist Security Info=True;User ID=sa;Password=mWqhHC2$&j24%&W5",
       "launchBrowser": true,
-      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "CzompiSoftwareCDN": {
       "commandName": "Project",
+      "commandLineArgs": "--connectionString Data Source=eu-central-0.czompi.cloud;Initial Catalog=CzSoft.CDN;Persist Security Info=True;User ID=sa;Password=mWqhHC2$&j24%&W5 --appGuid f20dcf6a-3fee-4187-a54e-b0d7de386395",
       "launchBrowser": true,
-      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

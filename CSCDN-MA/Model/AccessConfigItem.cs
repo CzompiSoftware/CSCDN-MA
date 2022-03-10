@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CSCDNMA.Model;
 
-public class AssetConfigItem
+public class AccessConfigItem
 {
     public int Id { get; set; }
 
-    public Guid ProductId { get; set; }
+    public string ProductId { get; set; }
     public string AssetRoute { get; set; }
 
     public string RequestRoute { get; set; }
