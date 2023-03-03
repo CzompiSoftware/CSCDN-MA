@@ -49,7 +49,7 @@ namespace CSCDNMA.Controllers
                 Request.Headers["Referer"].ToString()
 #endif
                 ;
-            string bareFileName = "", clientInfo = $"{ip} | {referer} | {Request.Headers["X-WAWS-Unencoded-URL"].FirstOrDefault()}";
+            string bareFileName = "";
 
             try
             {
@@ -70,25 +70,25 @@ namespace CSCDNMA.Controllers
             {
                 var itm = _settings.AssetConfig.First(itm => new Regex(itm.AssetRoute).IsMatch(currentPath));
                 if (!new Regex(itm.RequestRoute).IsMatch(referer))
-                {
-                    _logger.LogError($"{clientInfo} | {bareFileName} | AccessForbidden");
-                    return StatusCode(403, Globals.Error.AccessForbidden);
-                }
+				{
+					_logger.LogError("{ip} | {referer} | {azureAppServiceId} | {fileName} | {status}", ip, referer, Request.Headers["X-SITE-DEPLOYMENT-ID"].FirstOrDefault(), bareFileName, "AccessForbidden");
+					return StatusCode(403, Globals.Error.AccessForbidden);
+				}
             }
             //else if (Globals.EnabledHosts.ContainsKey("*"))
             //{
             //    if (!Globals.EnabledHosts["*"].Where(x => (referer ?? "").StartsWith(x ?? "", StringComparison.OrdinalIgnoreCase)).Any())
             //    {
-            //        _logger.LogError($"{clientInfo} | {bareFileName} | AccessForbidden");
+            //        _logger.LogError($"{ip} | {referer} | {azureService} | {bareFileName} | AccessForbidden");
             //        return StatusCode(403, Globals.Error.AccessForbidden);
             //    }
             //}
 
             #region Handle response
             if (type == null || product == null || remaining == null)
-            {
-                _logger.LogError($"{clientInfo} | {bareFileName} | AccessForbidden");
-                var error = Globals.Error.AccessForbidden;
+			{
+				_logger.LogError("{ip} | {referer} | {azureAppServiceId} | {fileName} | {status}", ip, referer, Request.Headers["X-SITE-DEPLOYMENT-ID"].FirstOrDefault(), bareFileName, "AccessForbidden");
+				var error = Globals.Error.AccessForbidden;
                 return StatusCode(403, error);
             }
             try
@@ -98,28 +98,27 @@ namespace CSCDNMA.Controllers
                 if (prod is not null)
                 {
                     var fileName = Path.GetFullPath(Path.Combine(Globals.AssetsDirectory, assetType.ToString().ToLower(), prod.Name, remaining.Replace('/', Path.DirectorySeparatorChar)));
-                    //_logger.LogInformation($"{JsonSerializer.Serialize(Request.Headers, Globals.JsonSerializerOptions)} | {fileName}");
                     if (System.IO.File.Exists(fileName))
-                    {
-                        _logger.LogInformation($"{clientInfo} | {fileName} | OK");
+					{
+						_logger.LogInformation("{ip} | {referer} | {azureAppServiceId} | {fileName} | {status}", ip, referer, Request.Headers["X-SITE-DEPLOYMENT-ID"].FirstOrDefault(), fileName, "OK");
                         var res = new FileInfo(fileName);
                         var mime = res.GetMime();
                         return File(System.IO.File.ReadAllBytes(fileName), mime);
                     }
                     else
-                    {
-                        _logger.LogInformation($"{clientInfo} | {fileName} | FileNotExists");
+					{
+						_logger.LogWarning("{ip} | {referer} | {azureAppServiceId} | {fileName} | {status}", ip, referer, Request.Headers["X-SITE-DEPLOYMENT-ID"].FirstOrDefault(), fileName, "FileNotExists");
                         return StatusCode(404, Globals.Error.FileNotExists);
                     }
                 }
 
-                _logger.LogError($"{clientInfo} | {bareFileName} | FileNotExists");
+				_logger.LogWarning("{ip} | {referer} | {azureAppServiceId} | {fileName} | {status}", ip, referer, Request.Headers["X-SITE-DEPLOYMENT-ID"].FirstOrDefault(), bareFileName, "AccessForbidden");
                 return StatusCode(404, Globals.Error.FileNotExists);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{clientInfo} | {bareFileName} | {ex}");
-                return StatusCode(415, Globals.Error.UnsupportedAssetType);
+				_logger.LogError("{ip} | {referer} | {azureAppServiceId} | {fileName} | {status}", ip, referer, Request.Headers["X-SITE-DEPLOYMENT-ID"].FirstOrDefault(), bareFileName, ex.Message);
+				return StatusCode(415, Globals.Error.UnsupportedAssetType);
             }
             #endregion
 
