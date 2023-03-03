@@ -1,6 +1,9 @@
+using CSCDNMA;
+using CSCDNMA.Database;
 using CzomPack.Attributes;
 using CzomPack.Logging;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
@@ -12,59 +15,73 @@ using System.IO;
 using System.Reflection;
 using System.Text.Json;
 
-namespace CSCDNMA;
+var _args = Arguments.Parse(args, " ");
 
-[Executable]
-public partial class Program
+CzomPack.Settings.Application = new(Assembly.GetAssembly(typeof(Globals)));
+CzomPack.Settings.WorkingDirectory = Globals.DataDirectory;
+Console.WriteLine(CzomPack.Settings.WorkingDirectory);
+
+#region Logger
+Log.Logger = CzomPack.Logging.Logger.GetLogger();
+#endregion
+
+#region ApiInformation
+var appProcess = Process.GetCurrentProcess();
+Globals.ApiInformation = new(appProcess.StartTime);
+#endregion
+
+#region Start app
+try
 {
-    static partial void Main(Arguments args)
-    {
-        CzomPack.Settings.Application = new(Assembly.GetExecutingAssembly());
-        CzomPack.Settings.WorkingDirectory = Globals.DataDirectory;
-        Console.WriteLine(CzomPack.Settings.WorkingDirectory);
+	Logger.Info("Starting host...");
 
-        #region Logger
-        Log.Logger = CzomPack.Logging.Logger.GetLogger();
-        #endregion
+	Logger.Info($" ---------------- Czompi Software CDN ------------------");
+	Logger.Info($"  Version: \"{Globals.ApiInformation.Version}\"");
+	Logger.Info($"  Build: \"{Globals.ApiInformation.Build}\"");
+	Logger.Info($"  ApplicationId: \"{Globals.ApiInformation.Id}\"");
+	Logger.Info($"  CompileTime: \"{Globals.ApiInformation.CompileTime:yyyy'.'MM'.'dd'T'HH':'mm':'ss}\"");
+	Logger.Info($" -------------------------------------------------------");
 
-        #region ApiInformation
-        var appProcess = Process.GetCurrentProcess();
-        Globals.ApiInformation = new(appProcess.StartTime);
-        #endregion
+	var builder = WebApplication.CreateBuilder();
 
-        #region Start app
-        try
-        {
-            Logger.Info("Starting host...");
+	builder.Services.AddControllers();
+	builder.Host.UseSerilog();
+	var db = _args.Any() && _args.ContainsName("connectionString") ? _args.WithName("connectionString") : builder.Configuration["CzSoftDatabase"];
 
-            Logger.Info($" ---------------- Czompi Software CDN ------------------");
-            Logger.Info($"  Version: \"{Globals.ApiInformation.Version}\"");
-            Logger.Info($"  Build: \"{Globals.ApiInformation.Build}\"");
-            Logger.Info($"  ApplicationId: \"{Globals.ApiInformation.Id}\"");
-            Logger.Info($"  CompileTime: \"{Globals.ApiInformation.CompileTime:yyyy'.'MM'.'dd'T'HH':'mm':'ss}\"");
-            Logger.Info($" -------------------------------------------------------");
-            CreateHostBuilder(args.GetArgumentList()).Build().Run();
-            //return 0;
-        }
-        catch (Exception ex)
-        {
-            Log.Fatal(ex, "Host terminated unexpectedly.");
-            //return 1;
-        }
-        finally
-        {
-            Log.CloseAndFlush();
-        }
-        #endregion
-    }
+	builder.Services.AddDbContext<CzSoftCDNDatabaseContext>(options =>
+	{
+		options.UseSqlServer(db);
+	}, contextLifetime: ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Singleton);
 
-    #region CreateHostBuilder
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .UseSerilog()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
-    #endregion
+	builder.Services.AddCors(options =>
+	{
+		options.AddDefaultPolicy(builder =>
+		{
+			builder.AllowAnyOrigin();
+		});
+	});
+
+	var app = builder.Build();
+	if (app.Environment.IsDevelopment())
+	{
+		app.UseDeveloperExceptionPage();
+	}
+
+	app.UseRouting();
+
+	app.UseCors();
+	app.UseAuthorization();
+
+	app.MapControllers();
+
+	app.Run();
 }
+catch (Exception ex)
+{
+	Log.Fatal(ex, "Host terminated unexpectedly.");
+}
+finally
+{
+	Log.CloseAndFlush();
+}
+#endregion

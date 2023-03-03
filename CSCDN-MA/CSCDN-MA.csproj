@@ -1,27 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0</TargetFrameworks>
+		<TargetFramework>net7.0</TargetFramework>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<Configurations>Release;Staging;Beta</Configurations>
 		<RootNamespace>CSCDNMA</RootNamespace>
-		<Version>1.0.0.10</Version>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Version>1.0.0.11</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CzomPack" Version="3.0.7.2" />
+		<PackageReference Include="CzomPack" Version="3.0.8" />
 		<PackageReference Include="CzomPack.Attributes" Version="1.0.2" />
-		<PackageReference Include="CzomPack.SourceGenerator" Version="1.0.1" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.2">
+		<PackageReference Include="CzomPack.SourceGenerator" Version="1.0.3" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.3">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.2" />
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
-		<PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.3" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+		<PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
 	</ItemGroup>
 
 
