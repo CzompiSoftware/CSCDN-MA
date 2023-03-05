@@ -11,7 +11,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="CzomPack" Version="3.0.8" />
-		<PackageReference Include="CzomPack.Attributes" Version="1.0.2" />
+		<PackageReference Include="CzomPack.Attributes" Version="1.0.3" />
 		<PackageReference Include="CzomPack.SourceGenerator" Version="1.0.3" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.3" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.3">
