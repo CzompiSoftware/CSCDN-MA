@@ -15,9 +15,9 @@ namespace CSCDNMA.Controllers
     public class AssetsController : ControllerBase
     {
         private readonly ILogger<AssetsController> _logger;
-        private readonly CzSoftCDNDatabaseContext _settings;
+        private readonly ApplicationDatabaseContext _settings;
 
-        public AssetsController(ILogger<AssetsController> logger, CzSoftCDNDatabaseContext settings)
+        public AssetsController(ILogger<AssetsController> logger, ApplicationDatabaseContext settings)
         {
             _logger = logger;
             _settings = settings;
