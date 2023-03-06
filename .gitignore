@@ -340,3 +340,4 @@ healthchecksdb
 
 # CZSCDN-MA custom ignores
 /data/
+/CSCDN-MA/Properties/launchSettings.json
