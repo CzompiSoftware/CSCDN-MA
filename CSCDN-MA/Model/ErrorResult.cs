@@ -1,13 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CSCDNMA.Model
+namespace CSCDNMA.Model;
+public struct ErrorResult
 {
-    public struct ErrorResult
-    {
-        public string Error { get; internal set; }
-        public string ErrorMessage { get; internal set; }
+    public string Error { get; internal set; }
+    public string ErrorMessage { get; internal set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public string Cause { get; internal set; }
-    }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string Cause { get; internal set; }
 }

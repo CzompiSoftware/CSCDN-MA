@@ -1,5 +1,11 @@
 ﻿namespace CSCDNMA.Model;
 
+public enum HostEnvironment
+{
+    Development,
+    Staging,
+    Production
+}
 public enum AssetType
 {
     CSS,

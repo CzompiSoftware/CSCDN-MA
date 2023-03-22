@@ -1,9 +1,12 @@
-﻿namespace CSCDNMA.Model;
+﻿using CzomPack.Cryptography;
+using System.Xml.Linq;
+
+namespace CSCDNMA.Model;
 
 internal class ApiInformation
 {
 #nullable enable
-	public ApiInformation(DateTime startTime, string? id = null)
+	public ApiInformation(DateTime startTime, string? node = null)
 #nullable disable
 	{
 #if STAGING
@@ -17,12 +20,14 @@ internal class ApiInformation
 #endif
 		Build = Builtin.BuildId;
 		StartTime = DateTime.Parse(startTime.ToString("yyyy'.'MM'.'dd'T'HH':'mm':'ss"));
-		Id = id is not null ? Guid.Parse(id) : Guid.NewGuid(); // Use app param as guid or create a new one when not set. 
+		Id = node is not null ? SHA1.Encode(node) : SHA1.Encode(Guid.NewGuid().ToString());
+		Node = node is not null ? node: "Standalone";
 		CompileTime = Builtin.CompileTime;
 		var ver = CzomPack.Settings.Application.Assembly.GetName().Version;
 		Version = $"{ver.ToString(3)}-build{ver.Revision:00}";
 	}
-	public Guid Id { get; internal set; }
+	public string Id { get; internal set; }
+	public string Node { get; internal set; }
 	public string Type { get; internal set; }
 	public string Version { get; internal set; }
 	public DateTime CompileTime { get; internal set; }

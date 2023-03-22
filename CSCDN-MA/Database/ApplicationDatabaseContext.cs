@@ -12,38 +12,36 @@ namespace CSCDNMA.Database;
 
 public class ApplicationDatabaseContext : DbContext
 {
-    public string ConnectionString { get; } = null;
-
-    public ApplicationDatabaseContext([NotNull] DbContextOptions options, string connectionString) : base(options)
+    public ApplicationDatabaseContext([NotNull] DbContextOptions options) : base(options)
     {
-        ConnectionString = connectionString;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (ConnectionString is not null) optionsBuilder.UseSqlServer(ConnectionString);
+        //if (_connectionString is not null) optionsBuilder.UseSqlServer(_connectionString);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-	{
-		try
-		{
-			if (File.Exists(Globals.ProductsFile))
-			{
-				var prods = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(Globals.ProductsFile)).Select(itm => new Product { Id = Guid.Parse(itm.Key), Name = itm.Value }).ToList();
-				Products.AddRange(prods);
-				this.SaveChanges();
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Error($"{ex}");
-		}
-		modelBuilder.Entity<Product>().Property(e => e.Id).HasConversion(to => to.ToString(), from => Guid.Parse(from));
-        modelBuilder.Entity<AssetConfigItem>().Property(e => e.ProductId).HasConversion(to => to.ToString(), from => Guid.Parse(from));
+    {
+        //try
+        //{
+        //    if (File.Exists(Globals.ProductsFile))
+        //    {
+        //        //var prods = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(Globals.ProductsFile)).Select(itm => new Product { Id = Guid.Parse(itm.Key), Name = itm.Value }).ToList();
+        //        var prods = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(Globals.ProductsFile)).Select(itm => new Product { Id = itm.Key, Name = itm.Value }).ToList();
+        //        Products.AddRange(prods);
+        //        this.SaveChanges();
+        //    }
+        //}
+        //catch (Exception ex)
+        //{
+        //    Logger.Error<ApplicationDatabaseContext>($"{ex}");
+        //}
+        //modelBuilder.Entity<Product>().Property(e => e.Id).HasConversion(to => to.ToString("N"), from => Guid.ParseExact(from, "N"));
+        //modelBuilder.Entity<AssetConfigItem>().Property(e => e.ProductId).HasConversion(to => to.ToString("N"), from => Guid.ParseExact(from, "N"));
     }
 
     public DbSet<Product> Products { get; set; }
     
-	public DbSet<AssetConfigItem> AssetConfig { get; set; }
+	public DbSet<AssetConfigItem> AccessConfig { get; set; }
 }

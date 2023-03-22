@@ -9,10 +9,10 @@ public class AssetConfigItem
 {
     public int Id { get; set; }
 
-    public Guid ProductId { get; set; }
+    public string ProductId { get; set; }
     public string AssetRoute { get; set; }
 
     public string RequestRoute { get; set; }
 
-    public virtual Product Product { get; set; }
+    public virtual Product? Product { get; set; }
 }

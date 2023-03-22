@@ -1,127 +1,60 @@
 ﻿using CSCDNMA.Database;
 using CSCDNMA.Model;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
-using System.Linq;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace CSCDNMA.Controllers
+namespace CSCDNMA.Controllers;
+
+[ApiController]
+public class AssetsController : BaseController<AssetsController>
 {
-    [ApiController]
-    public class AssetsController : ControllerBase
+    public AssetsController(ILogger<AssetsController> logger, ApplicationDatabaseContext settings) : base(logger, settings)
     {
-        private readonly ILogger<AssetsController> _logger;
-        private readonly ApplicationDatabaseContext _settings;
-
-        public AssetsController(ILogger<AssetsController> logger, ApplicationDatabaseContext settings)
-        {
-            _logger = logger;
-            _settings = settings;
-        }
-
-        [HttpGet]
-        [Route("api/{*remaining}")]
-        public async Task<IActionResult> ApiInfoAsync(string remaining = null) => await Task.Run(() => ApiInfo(remaining));
-
-        [NonAction]
-        public IActionResult ApiInfo(string remaining = null)
-        {
-            return Ok(Globals.ApiInformation);
-        }
-
-        [HttpGet]
-        [Route("{type?}/{product?}/{*remaining}")]
-        public async Task<IActionResult> GetAssetAsync(string type = null, string product = null, string remaining = null) => await Task.Run(() => GetAsset(type, product, remaining));
-
-        [NonAction]
-        public IActionResult GetAsset(string type = null, string product = null, string remaining = null)
-        {
-
-            #region Definitions
-            string ip = Request.Headers["cf-connecting-ip"].FirstOrDefault(), referer =
-#if NET6_0_OR_GREATER
-                Request.Headers.Referer.FirstOrDefault()
-#else
-                Request.Headers["Referer"].ToString()
-#endif
-                ;
-            string bareFileName = "";
-
-            try
-            {
-                bareFileName = Path.GetFullPath(Path.Combine(Globals.AssetsDirectory, type?.ToLower() ?? "", product?.ToLower() ?? "", remaining?.Replace('/', Path.DirectorySeparatorChar) ?? "") ?? "");
-
-            }
-            catch (Exception)
-            {
-                bareFileName = "InvalidPathException";
-            }
-
-            string currentPath = $"{Request.Headers[":Path"].FirstOrDefault()}";
-            #endregion
-
-            var json = $"{JsonSerializer.Serialize(Request.Headers, Globals.JsonSerializerOptions)}";
-
-            if (_settings.AssetConfig.Any(itm => new Regex(itm.AssetRoute).IsMatch(currentPath)))
-            {
-                var itm = _settings.AssetConfig.First(itm => new Regex(itm.AssetRoute).IsMatch(currentPath));
-                if (!new Regex(itm.RequestRoute).IsMatch(referer))
-				{
-					_logger.LogError("{ip} | {referer} | {azureAppServiceId} | {fileName} | {status}", ip, referer, Request.Headers["X-SITE-DEPLOYMENT-ID"].FirstOrDefault(), bareFileName, "AccessForbidden");
-					return StatusCode(403, Globals.Error.AccessForbidden);
-				}
-            }
-            //else if (Globals.EnabledHosts.ContainsKey("*"))
-            //{
-            //    if (!Globals.EnabledHosts["*"].Where(x => (referer ?? "").StartsWith(x ?? "", StringComparison.OrdinalIgnoreCase)).Any())
-            //    {
-            //        _logger.LogError($"{ip} | {referer} | {azureService} | {bareFileName} | AccessForbidden");
-            //        return StatusCode(403, Globals.Error.AccessForbidden);
-            //    }
-            //}
-
-            #region Handle response
-            if (type == null || product == null || remaining == null)
-			{
-				_logger.LogError("{ip} | {referer} | {azureAppServiceId} | {fileName} | {status}", ip, referer, Request.Headers["X-SITE-DEPLOYMENT-ID"].FirstOrDefault(), bareFileName, "AccessForbidden");
-				var error = Globals.Error.AccessForbidden;
-                return StatusCode(403, error);
-            }
-            try
-            {
-                var assetType = Enum.Parse(typeof(AssetType), type, true);
-                var prod = _settings.Products.First(prod => prod.Id.ToString().Replace("-", "").ToLower().Equals(product.ToLower()));
-                if (prod is not null)
-                {
-                    var fileName = Path.GetFullPath(Path.Combine(Globals.AssetsDirectory, assetType.ToString().ToLower(), prod.Name, remaining.Replace('/', Path.DirectorySeparatorChar)));
-                    if (System.IO.File.Exists(fileName))
-					{
-						_logger.LogInformation("{ip} | {referer} | {azureAppServiceId} | {fileName} | {status}", ip, referer, Request.Headers["X-SITE-DEPLOYMENT-ID"].FirstOrDefault(), fileName, "OK");
-                        var res = new FileInfo(fileName);
-                        var mime = res.GetMime();
-                        return File(System.IO.File.ReadAllBytes(fileName), mime);
-                    }
-                    else
-					{
-						_logger.LogWarning("{ip} | {referer} | {azureAppServiceId} | {fileName} | {status}", ip, referer, Request.Headers["X-SITE-DEPLOYMENT-ID"].FirstOrDefault(), fileName, "FileNotExists");
-                        return StatusCode(404, Globals.Error.FileNotExists);
-                    }
-                }
-
-				_logger.LogWarning("{ip} | {referer} | {azureAppServiceId} | {fileName} | {status}", ip, referer, Request.Headers["X-SITE-DEPLOYMENT-ID"].FirstOrDefault(), bareFileName, "AccessForbidden");
-                return StatusCode(404, Globals.Error.FileNotExists);
-            }
-            catch (Exception ex)
-            {
-				_logger.LogError("{ip} | {referer} | {azureAppServiceId} | {fileName} | {status}", ip, referer, Request.Headers["X-SITE-DEPLOYMENT-ID"].FirstOrDefault(), bareFileName, ex.Message);
-				return StatusCode(415, Globals.Error.UnsupportedAssetType);
-            }
-            #endregion
-
-        }
     }
+
+    [HttpGet]
+    [Route("{type}/{product}@v{version}/{*remaining}")]
+    public async Task<IActionResult> GetAssetV2Async(string type, string product, Version version, string remaining = null)
+    {
+        _ip ??= Request.Headers["cf-connecting-ip"].FirstOrDefault() ?? Request.Headers["x-real-ip"].FirstOrDefault() ?? Request.Headers["x-forwarded-for"].FirstOrDefault();
+#if NET6_0_OR_GREATER
+        _referer ??= Request.Headers.Referer.FirstOrDefault();
+#else
+        _referer ??= Request.Headers["Referer"].ToString();
+#endif
+        _nodeId ??= Request.Headers["NodeId"].ToString();
+
+        string fileName = "";
+        string ver = $"v{Math.Max(version.Major, 0)}.{Math.Max(version.Minor, 0)}.{Math.Max(version.Build, 0)}";
+
+        string currentPath = $"{Request.Headers["Path"].FirstOrDefault()}";
+
+        try
+        {
+            fileName = Path.GetFullPath(Path.Combine(Globals.AssetsDirectory, type?.ToLower() ?? "", product?.ToLower() ?? "", remaining?.Replace('/', Path.DirectorySeparatorChar) ?? "") ?? "");
+        }
+        catch (Exception ex)
+        {
+            LogError(fileName, ex.GetType().Name);
+            return StatusCode(404, Globals.Error.FileNotExists);
+        }
+
+        try
+        {
+            AssetType assetType = Enum.Parse<AssetType>(type, true);
+            var prod = _settings.Products.First(prod => prod.Name.ToLower().Equals(product.ToLower()));
+            if (prod is not null)
+            {
+                return await HandleResponseAsync(assetType, prod.Name, ver, remaining.Replace('/', Path.DirectorySeparatorChar));
+            }
+
+        }
+        catch (Exception ex)
+        {
+            LogError(fileName, ex.GetType().Name);
+            return StatusCode(404, Globals.Error.FileNotExists);
+        }
+        LogError(fileName, $"{typeof(AccessViolationException).Name}.g");
+        return StatusCode(403, Globals.Error.AccessForbidden);
+    }
+
 }

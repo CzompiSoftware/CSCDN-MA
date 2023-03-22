@@ -1,83 +1,86 @@
 ﻿using CSCDNMA;
 using CSCDNMA.Model;
 using System.IO;
+using System.Net;
 using System.Text.Json;
 
-namespace CSCDNMA
+namespace CSCDNMA;
+
+internal class Globals
 {
-    internal class Globals
+    #region Directories
+    internal static string DataDirectory
     {
-        #region Directories
-        public static string DataDirectory
+        get
         {
-            get
-            {
-                var dir = Path.GetFullPath(Path.Combine("..", "data"));
-                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-                return dir;
-            }
+            var dir = Path.GetFullPath(Path.Combine("..", "data"));
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            return dir;
         }
-        public static string AssetsDirectory
+    }
+    internal static string AssetsDirectory
+    {
+        get
         {
-            get
-            {
-                var dir = Path.GetFullPath(Path.Combine(DataDirectory, "assets"));
-                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-                return dir;
-            }
+            var dir = Path.GetFullPath(Path.Combine(DataDirectory, "assets"));
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            return dir;
         }
-        public static string LogsDirectory
+    }
+    internal static string LogsDirectory
+    {
+        get
         {
-            get
-            {
-                var dir = Path.GetFullPath(Path.Combine(DataDirectory, "logs"));
-                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-                return dir;
-            }
+            var dir = Path.GetFullPath(Path.Combine(DataDirectory, "logs"));
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            return dir;
         }
-        #endregion
-        public static string ProductsFile => Path.Combine(DataDirectory, "products.json");
-        public static string ConfigFile => Path.Combine(DataDirectory, "config.json");
-        public static string EnabledHostsFile => Path.Combine(DataDirectory, "enabledhosts.json");
-        public static string DataSourceFile => Path.Combine(DataDirectory, "settings.db");
+    }
+    #endregion
 
-        //public static Assets Assets { get; set; }
-        public static JsonSerializerOptions JsonSerializerOptions => new()
+    internal static string ProductsFile => Path.Combine(DataDirectory, "products.json");
+    internal static string ConfigFile => Path.Combine(DataDirectory, "config.json");
+    internal static string EnabledHostsFile => Path.Combine(DataDirectory, "enabledhosts.json");
+    internal static string DataSourceFile => Path.Combine(DataDirectory, "settings.db");
+
+    internal static HostEnvironment Environment { get; set; }
+    internal static Metrics Metrics { get; set; }
+
+    internal static JsonSerializerOptions JsonSerializerOptions => new()
+    {
+        WriteIndented = true,
+        AllowTrailingCommas = true,
+    };
+
+    internal static ApiInformation ApiInformation { get; set; }
+
+    internal class Error
+    {
+        internal static ErrorResult AccessForbidden
         {
-            WriteIndented = true,
-            AllowTrailingCommas = true,
-        };
+            get => new()
+            {
+                Error = nameof(FileNotFoundException),
+                ErrorMessage = "You does not have permission to access this asset."
+            };
+        }
 
-        public static ApiInformation ApiInformation { get; internal set; }
-
-        public class Error
+        internal static ErrorResult FileNotExists
         {
-            public static ErrorResult AccessForbidden
+            get => new()
             {
-                get => new()
-                {
-                    Error = "AccessForbiddenException",
-                    ErrorMessage = "You does not have permission to access this asset."
-                };
-            }
+                Error = nameof(AccessViolationException),
+                ErrorMessage = "Specified asset does not exists.",
+            };
+        }
 
-            public static ErrorResult FileNotExists
+        internal static ErrorResult UnsupportedAssetType
+        {
+            get => new()
             {
-                get => new()
-                {
-                    Error = "FileNotExistsException",
-                    ErrorMessage = "Specified asset does not exists.",
-                };
-            }
-
-            public static ErrorResult UnsupportedAssetType
-            {
-                get => new()
-                {
-                    Error = "UnsupportedAssetTypeException",
-                    ErrorMessage = "Invalid asset type selected.",
-                };
-            }
+                Error = nameof(NotSupportedException),
+                ErrorMessage = "Invalid asset type selected.",
+            };
         }
     }
 }
