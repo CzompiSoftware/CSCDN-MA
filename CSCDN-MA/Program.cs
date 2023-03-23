@@ -5,7 +5,6 @@ using CzomPack.Attributes;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Serilog.Events;
 using Serilog.Sinks.Grafana.Loki;
 using Serilog.Sinks.SystemConsole.Themes;
 using System.Diagnostics;
@@ -28,7 +27,7 @@ Serilog.Debugging.SelfLog.Enable(msg =>
 {
 	try
 	{
-		File.AppendAllText("internallog.log", msg, Encoding.UTF8);
+		File.AppendAllText(Path.Combine(Globals.LogsDirectory, $"SelfLog.{DateTime.Now:yyyy-MM-dd}.log"), msg, Encoding.UTF8);
 	}
 	catch (Exception ex)
 	{
@@ -40,36 +39,30 @@ Serilog.Debugging.SelfLog.Enable(msg =>
 try
 {
 	var builder = WebApplication.CreateBuilder(args);
-	Globals.Metrics = builder.Configuration.GetSection("Metrics").Get<Metrics>();
-    #region Logger
-    //Log.Logger = CzomPack.Logging.Logger.GetLogger<Program>();
+	Globals.Metrics = builder.Configuration.GetSection("Metrics").Get<Metrics>()?? new()
+	{
+		Provider = MetricsProvider.GrafanaLoki,
+		Host = "http://loki:3100"
+	};
 
+    #region Logger
     var loggerConfig = new LoggerConfiguration()
 		.MinimumLevel.Debug()
 		.Enrich.FromLogContext()
 		.WriteTo.File(
-			Path.Combine(Globals.LogsDirectory, @$"{Assembly.GetExecutingAssembly().GetName().Name}.{DateTime.Now:yyyy-MM-dd}.log"),
+			Path.Combine(Globals.LogsDirectory, @$"{Assembly.GetAssembly(typeof(Globals)).FullName}.{{Date:yyyy-MM-dd}}.log"),
 			outputTemplate: "[{Timestamp:HH:mm:ss}] [{Level}] [{SourceContext}] {Message}{NewLine}{Exception}",
-			fileSizeLimitBytes: 1_000_000,
-#if RELEASE
-        restrictedToMinimumLevel: LogEventLevel.Information,
-#else
-			restrictedToMinimumLevel: LogEventLevel.Verbose,
-#endif
 			rollOnFileSizeLimit: true,
 			shared: true,
 			flushToDiskInterval: TimeSpan.FromSeconds(1))
 		.WriteTo.Console(
 			outputTemplate: "[{Timestamp:HH:mm:ss}] [{Level}] [{SourceContext}] {Message}{NewLine}{Exception}",
-			theme: AnsiConsoleTheme.Literate,
-#if RELEASE
-        restrictedToMinimumLevel: LogEventLevel.Information
-#else
-			restrictedToMinimumLevel: LogEventLevel.Verbose
-#endif
+			theme: AnsiConsoleTheme.Literate
 		);
-		loggerConfig.WriteTo.GrafanaLoki(Globals.MetricsProvider.Host ?? "http://loki:3100", new List<LokiLabel>() { new() { Key = "product", Value = "czsoftcdn-node" }, new() { Key = "node", Value = Globals.ApiInformation.Node ?? "n/a" } })
-        Log.Logger = loggerConfig.CreateLogger();
+	if (Globals.Metrics.Provider is MetricsProvider.GrafanaLoki)
+		loggerConfig.WriteTo.GrafanaLoki(Globals.Metrics.Host ?? "http://loki:3100", new List<LokiLabel>() { new() { Key = "product", Value = "czsoftcdn-node" }, new() { Key = "node", Value = Globals.ApiInformation.Node ?? "n/a" } });
+    
+	Log.Logger = loggerConfig.CreateLogger();
     #endregion
 
     Log.Information("Starting host...");

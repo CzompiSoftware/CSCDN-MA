@@ -21,7 +21,7 @@ services:
     depends_on:
       - node
     ports:
-      - "<port>:4000"
+      - "4000:4000"
 networks:
   default:
     driver: bridge

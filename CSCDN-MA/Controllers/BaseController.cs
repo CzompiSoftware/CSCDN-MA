@@ -9,6 +9,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.Intrinsics.X86;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CSCDNMA.Controllers;
 
@@ -39,6 +40,7 @@ public class BaseController<T> : ControllerBase
     [NonAction]
     protected async Task<IActionResult> HandleResponseAsync(AssetType assetType, string product, string version, string path)
     {
+        string currentPath = Request.Headers["Path"].FirstOrDefault() ?? Request.Headers[":Path"].FirstOrDefault() ?? Request.Path;
         var fileName = Path.GetFullPath(Path.Combine(Globals.AssetsDirectory, assetType.ToString().ToLowerInvariant(), product, version, path));
 
         try
@@ -47,7 +49,7 @@ public class BaseController<T> : ControllerBase
         }
         catch (AccessViolationException avex)
         {
-            LogError(fileName, $"{nameof(AccessViolationException)}.g");
+            LogError(currentPath, $"{nameof(AccessViolationException)}.g");
 
             return StatusCode(403, ErrorJson(avex));
         }
@@ -61,7 +63,7 @@ public class BaseController<T> : ControllerBase
 
             if (System.IO.File.Exists(fileName))
             {
-               LogInformation(fileName, HttpStatusCode.OK);
+               LogInformation(currentPath, HttpStatusCode.OK);
                 var res = new FileInfo(fileName);
                 var mime = res.GetMime();
                 var ext = Path.GetExtension(fileName).ToLower();
@@ -87,14 +89,14 @@ public class BaseController<T> : ControllerBase
             }
             else
             {
-                LogWarning(fileName, HttpStatusCode.NotFound);
+                LogWarning(currentPath, HttpStatusCode.NotFound);
                 return StatusCode(404, Globals.Error.FileNotExists);
             }
 
         }
         catch (Exception ex)
         {
-            LogError(fileName, ex.Message);
+            LogError(currentPath, ex.Message);
 
             if(Globals.Environment is not HostEnvironment.Production)
                 return StatusCode(403, ErrorJson(ex));
@@ -119,8 +121,15 @@ public class BaseController<T> : ControllerBase
     private async Task CheckRights(string referer, string assetRoute)
     {
         var assets = await _settings.AccessConfig.ToListAsync();
-        var is_referer_trusted = assets.Any(asset => asset.RequestRoute?.Equals("*.*") ?? false || new Regex(asset.RequestRoute ?? "").Matches(referer).Any());
-        var is_assetroute_matched = assets.Any(asset => asset.AssetRoute?.Equals("*.*") ?? false || new Regex(asset.AssetRoute ?? "").Matches(assetRoute).Any());
+        var test = new Regex("^(http(s|):\\/\\/((.*.)|)(czompi(|software|refurb)|czsoft|hunlux(school|launcher)|kamera).(hu|eu|intra|dev)\\/)").Matches(referer);
+        var trusted = assets.Select(asset =>
+        {
+            var matches = new Regex(asset.RequestRoute ?? "").Matches(referer);
+            var wildcard = asset.RequestRoute?.Equals("*.*") ?? false;
+            return wildcard || matches.Any();
+        }).ToList();
+        var is_referer_trusted = trusted.Contains(true);
+        var is_assetroute_matched = assets.Where((itm, i) => trusted[i]).Select(asset => (asset.AssetRoute?.Equals("*.*") ?? false) || (new Regex(asset.AssetRoute ?? "").Matches(assetRoute).Any())).Contains(true);
         if (!is_referer_trusted) throw new AccessViolationException($"`{referer ?? "-"}` is not a trusted host.");
         if (!is_assetroute_matched) throw new AccessViolationException($"`{referer ?? "-"}` is a trusted host, but it's not allowed to access `{assetRoute}`.");
     }

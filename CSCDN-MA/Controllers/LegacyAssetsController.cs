@@ -37,7 +37,6 @@ public class LegacyAssetsController : BaseController<LegacyAssetsController>
         _nodeId ??= Request.Headers["NodeId"].ToString();
         #endregion
 
-        string fileName = "";
         string ver = $"v{Math.Max(version.Major, 0)}.{Math.Max(version.Minor, 0)}.{Math.Max(version.Build, 0)}";
 
         AssetType assetType = Enum.Parse<AssetType>(type, true);
@@ -46,7 +45,7 @@ public class LegacyAssetsController : BaseController<LegacyAssetsController>
         {
             return await HandleResponseAsync(assetType, prod.Name, ver, remaining.Replace('/', Path.DirectorySeparatorChar));
         }
-        LogWarning(fileName, HttpStatusCode.Forbidden);
+        LogWarning(Request.Path, HttpStatusCode.Forbidden);
         return StatusCode(404, Globals.Error.FileNotExists);
     }
 

@@ -23,20 +23,9 @@ public class AssetsController : BaseController<AssetsController>
 #endif
         _nodeId ??= Request.Headers["NodeId"].ToString();
 
-        string fileName = "";
         string ver = $"v{Math.Max(version.Major, 0)}.{Math.Max(version.Minor, 0)}.{Math.Max(version.Build, 0)}";
 
-        string currentPath = $"{Request.Headers["Path"].FirstOrDefault()}";
-
-        try
-        {
-            fileName = Path.GetFullPath(Path.Combine(Globals.AssetsDirectory, type?.ToLower() ?? "", product?.ToLower() ?? "", remaining?.Replace('/', Path.DirectorySeparatorChar) ?? "") ?? "");
-        }
-        catch (Exception ex)
-        {
-            LogError(fileName, ex.GetType().Name);
-            return StatusCode(404, Globals.Error.FileNotExists);
-        }
+        string currentPath = Request.Headers["Path"].FirstOrDefault() ?? Request.Headers[":Path"].FirstOrDefault() ?? Request.Path;
 
         try
         {
@@ -50,10 +39,10 @@ public class AssetsController : BaseController<AssetsController>
         }
         catch (Exception ex)
         {
-            LogError(fileName, ex.GetType().Name);
+            LogError(currentPath, ex.GetType().Name);
             return StatusCode(404, Globals.Error.FileNotExists);
         }
-        LogError(fileName, $"{typeof(AccessViolationException).Name}.g");
+        LogError(currentPath, $"{typeof(AccessViolationException).Name}.g");
         return StatusCode(403, Globals.Error.AccessForbidden);
     }
 

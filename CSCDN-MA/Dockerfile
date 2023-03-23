@@ -6,8 +6,6 @@ EXPOSE 80
 RUN apk add --no-cache icu-libs
 
 ENV \
-    # Application guid
-    APPLICATION_GUID="" \
     # Connection string
     CONNECTION_STRING="" \
     # CSCDN-MA version
@@ -28,10 +26,10 @@ COPY ["nuget.config", "CSCDN-MA/nuget.config"]
 RUN dotnet restore "CSCDN-MA/CSCDN-MA.csproj"
 COPY . .
 WORKDIR "/src/CSCDN-MA"
-RUN dotnet build "CSCDN-MA.csproj" -c Release -o /app/build
+RUN dotnet build "CSCDN-MA.csproj" -c Beta -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "CSCDN-MA.csproj" -c Release -o /app/publish
+RUN dotnet publish "CSCDN-MA.csproj" -c Beta -o /app/publish
 
 FROM base AS final
 WORKDIR /app
