@@ -1,7 +1,5 @@
-﻿using CSCDNMA;
-using CSCDNMA.Model;
-using System.IO;
-using System.Net;
+﻿using CSCDNMA.Model;
+using Serilog.Core;
 using System.Text.Json;
 
 namespace CSCDNMA;
@@ -38,13 +36,10 @@ internal class Globals
     }
     #endregion
 
-    internal static string ProductsFile => Path.Combine(DataDirectory, "products.json");
-    internal static string ConfigFile => Path.Combine(DataDirectory, "config.json");
-    internal static string EnabledHostsFile => Path.Combine(DataDirectory, "enabledhosts.json");
-    internal static string DataSourceFile => Path.Combine(DataDirectory, "settings.db");
-
     internal static HostEnvironment Environment { get; set; }
+    
     internal static Metrics Metrics { get; set; }
+    internal static Serilog.ILogger MetricsLogger { get; set; }
 
     internal static JsonSerializerOptions JsonSerializerOptions => new()
     {
@@ -60,19 +55,16 @@ internal class Globals
         {
             get => new()
             {
-                Error = nameof(FileNotFoundException),
+                Error = nameof(AccessViolationException),
                 ErrorMessage = "You does not have permission to access this asset."
             };
         }
 
-        internal static ErrorResult FileNotExists
+        internal static ErrorResult FileNotExists => new()
         {
-            get => new()
-            {
-                Error = nameof(AccessViolationException),
-                ErrorMessage = "Specified asset does not exists.",
-            };
-        }
+            Error = nameof(FileNotFoundException),
+            ErrorMessage = "Specified asset does not exists.",
+        };
 
         internal static ErrorResult UnsupportedAssetType
         {

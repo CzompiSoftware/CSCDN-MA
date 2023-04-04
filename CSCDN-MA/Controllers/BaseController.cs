@@ -4,12 +4,10 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Text;
 using CSCDNMA.Database;
-using Microsoft.AspNetCore.Components.RenderTree;
-using System.Runtime.ConstrainedExecution;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.Intrinsics.X86;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Serilog.Events;
+using CzomPack.Extensions;
+using System.IO;
 
 namespace CSCDNMA.Controllers;
 
@@ -21,25 +19,20 @@ public class BaseController<T> : ControllerBase
     protected string _ip = null;
     protected string _referer = null;
     protected string _nodeId = null;
+    protected string _path = null;
 
     public BaseController(ILogger<T> logger, ApplicationDatabaseContext settings)
     {
         _logger = logger;
         _settings = settings;
-
-        //_ip ??= Request?.Headers?["cf-connecting-ip"].FirstOrDefault() ?? Request?.Headers?["x-real-ip"].FirstOrDefault() ?? Request?.Headers?["x-forwarded-for"].FirstOrDefault();
-#if NET6_0_OR_GREATER
-        _referer ??= Request?.Headers?.Referer.FirstOrDefault();
-#else
-        _referer ??= Request?.Headers?["Referer"].ToString();
-#endif
-        _nodeId ??= Globals.ApiInformation.Node;
     }
 
     #region HandleResponse
     [NonAction]
     protected async Task<IActionResult> HandleResponseAsync(AssetType assetType, string product, string version, string path)
     {
+        PopulateFields();
+
         string currentPath = Request.Headers["Path"].FirstOrDefault() ?? Request.Headers[":Path"].FirstOrDefault() ?? Request.Path;
         var fileName = Path.GetFullPath(Path.Combine(Globals.AssetsDirectory, assetType.ToString().ToLowerInvariant(), product, version, path));
 
@@ -104,6 +97,24 @@ public class BaseController<T> : ControllerBase
         }
     }
 
+    protected void PopulateFields()
+    {
+        var ip = Request?.Headers?["cf-connecting-ip"].FirstOrDefault();
+        if(ip is null)
+        {
+            var xff = Request?.Headers?["x-forwarded-for"].FirstOrDefault();
+            if (xff?.Contains(',') ?? false) xff = xff.Split(',').First().Trim();
+            ip ??= xff?.Trim();
+        }   
+        var referer = Request?.Headers?.Referer.FirstOrDefault();
+        var nodeId = Globals.ApiInformation.Node;
+        var path = (Request?.Headers?["Path"].FirstOrDefault() ?? Request?.Headers?[":Path"].FirstOrDefault()) ?? Request?.Path;
+        if (_ip != ip) _ip = ip;
+        if (_referer != referer) _referer = referer;
+        if (_nodeId != nodeId) _nodeId = nodeId;
+        if (_path != path) _path = path;
+    }
+
     private ErrorResult ErrorJson(Exception avex, string message = null) => new()
     {
         Error = avex.GetType().Name,
@@ -120,34 +131,55 @@ public class BaseController<T> : ControllerBase
 
     private async Task CheckRights(string referer, string assetRoute)
     {
+        bool is_referer_trusted = false;
+        bool is_assetroute_matched = false;
         var assets = await _settings.AccessConfig.ToListAsync();
-        var test = new Regex("^(http(s|):\\/\\/((.*.)|)(czompi(|software|refurb)|czsoft|hunlux(school|launcher)|kamera).(hu|eu|intra|dev)\\/)").Matches(referer);
-        var trusted = assets.Select(asset =>
+        foreach (var asset in assets)
         {
-            var matches = new Regex(asset.RequestRoute ?? "").Matches(referer);
-            var wildcard = asset.RequestRoute?.Equals("*.*") ?? false;
-            return wildcard || matches.Any();
-        }).ToList();
-        var is_referer_trusted = trusted.Contains(true);
-        var is_assetroute_matched = assets.Where((itm, i) => trusted[i]).Select(asset => (asset.AssetRoute?.Equals("*.*") ?? false) || (new Regex(asset.AssetRoute ?? "").Matches(assetRoute).Any())).Contains(true);
-        if (!is_referer_trusted) throw new AccessViolationException($"`{referer ?? "-"}` is not a trusted host.");
-        if (!is_assetroute_matched) throw new AccessViolationException($"`{referer ?? "-"}` is a trusted host, but it's not allowed to access `{assetRoute}`.");
+            var refererWildcard = asset.RequestRoute?.Equals("*.*") ?? false;
+            if(!refererWildcard)
+            {
+                var refererMatches = new Regex(asset.RequestRoute ?? "-+-").Matches(referer ?? "-");
+
+                if (!refererMatches.Any()) continue;
+                is_referer_trusted = true;
+            }
+
+            var assetRouteWildcard = asset.AssetRoute?.Equals("*.*") ?? false;
+            if(!assetRouteWildcard)
+            {
+                var assetRouteMatches = new Regex(asset.AssetRoute ?? "").Matches(assetRoute ?? "/");
+                if (!assetRouteMatches.Any()) continue;
+                is_assetroute_matched = true;
+            }
+
+            return;
+        }
+
+        if (!is_referer_trusted)
+            throw new AccessViolationException($"`{referer ?? "-"}` is not a trusted host.");
+
+        if (!is_assetroute_matched)
+            throw new AccessViolationException($"`{referer ?? "-"}` is a trusted host, but it's not allowed to access `{assetRoute}`.");
     }
     #endregion
 
     #region Logging
     [NonAction]
-    protected void LogActionResult(LogLevel logLevel, string fileName, object status)
+    protected void LogActionResult(LogLevel logLevel, string path, object status)
     {
-        _ip ??= Request?.Headers?["cf-connecting-ip"].FirstOrDefault() ?? Request?.Headers?["x-forwarded-for"].FirstOrDefault() ?? Request?.Headers?["x-real-ip"].FirstOrDefault();
-#if NET6_0_OR_GREATER
-        _referer ??= Request?.Headers?.Referer.FirstOrDefault();
-#else
-        _referer ??= Request?.Headers?["Referer"].ToString();
-#endif
-        _nodeId ??= Globals.ApiInformation.Node;
+        PopulateFields();
 
-        _logger.Log(logLevel, "{ip} | {referer} | {nodeId} | {fileName} | {@status}", _ip, _referer, _nodeId, fileName, status);
+        if(Globals.Metrics is not null)
+        {
+            var level = $"{logLevel}";
+            if (level.EqualsIgnoreCase($"{LogLevel.Trace}")) level = $"{LogEventLevel.Verbose}";
+            if (level.EqualsIgnoreCase($"{LogLevel.Critical}")) level = $"{LogEventLevel.Fatal}";
+            var logEventLevel = Enum.Parse<LogEventLevel>(level, true);
+            Globals.MetricsLogger.Write(logEventLevel, "{ip} | {referer} | {nodeId} | {path} | {@status}", _ip, _referer, _nodeId, path, status);
+        }
+
+        _logger.Log(logLevel, "{ip} | {referer} | {nodeId} | {path} | {@status}", _ip, _referer, _nodeId, path, status);
     }
 
     [NonAction]

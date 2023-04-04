@@ -59,10 +59,17 @@ try
 			outputTemplate: "[{Timestamp:HH:mm:ss}] [{Level}] [{SourceContext}] {Message}{NewLine}{Exception}",
 			theme: AnsiConsoleTheme.Literate
 		);
-	if (Globals.Metrics.Provider is MetricsProvider.GrafanaLoki)
-		loggerConfig.WriteTo.GrafanaLoki(Globals.Metrics.Host ?? "http://loki:3100", new List<LokiLabel>() { new() { Key = "product", Value = "czsoftcdn-node" }, new() { Key = "node", Value = Globals.ApiInformation.Node ?? "n/a" } });
+    Log.Logger = loggerConfig.CreateLogger();
+    if (Globals.Metrics is not null)
+    {
+		var metricsLoggerConfig = new LoggerConfiguration();
+
+        if (Globals.Metrics.Provider is MetricsProvider.GrafanaLoki)
+			metricsLoggerConfig.WriteTo.GrafanaLoki(Globals.Metrics.Host ?? "http://loki:3100", new List<LokiLabel>() { new() { Key = "product", Value = "czsoftcdn-node" }, new() { Key = "node", Value = Globals.ApiInformation.Node ?? "n/a" } });
+
+		Globals.MetricsLogger = metricsLoggerConfig.CreateLogger();
+    }
     
-	Log.Logger = loggerConfig.CreateLogger();
     #endregion
 
     Log.Information("Starting host...");
