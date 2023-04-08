@@ -37,4 +37,4 @@ COPY --from=publish /app/publish .
 
 HEALTHCHECK CMD curl --fail http://localhost || exit 1 # test if it is working. Source: https://www.docker.com/blog/9-tips-for-containerizing-your-net-application/
 
-ENTRYPOINT dotnet "CSCDN-MA.dll" "--connectionString $CONNECTION_STRING --appGuid $APPLICATION_GUID"
+ENTRYPOINT ["dotnet", "CSCDN-MA.dll"]
