@@ -35,6 +35,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-HEALTHCHECK CMD curl --fail http://localhost || exit 1 # test if it is working. Source: https://www.docker.com/blog/9-tips-for-containerizing-your-net-application/
+# Source: https://www.docker.com/blog/9-tips-for-containerizing-your-net-application/
+HEALTHCHECK CMD curl --fail http://localhost/api || exit 1
 
 ENTRYPOINT ["dotnet", "CSCDN-MA.dll"]
