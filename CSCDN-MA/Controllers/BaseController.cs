@@ -170,13 +170,13 @@ public class BaseController<T> : ControllerBase
     {
         PopulateFields();
 
-        if(Globals.Metrics is not null)
+        if(Globals.Telemetry is not null)
         {
             var level = $"{logLevel}";
             if (level.EqualsIgnoreCase($"{LogLevel.Trace}")) level = $"{LogEventLevel.Verbose}";
             if (level.EqualsIgnoreCase($"{LogLevel.Critical}")) level = $"{LogEventLevel.Fatal}";
             var logEventLevel = Enum.Parse<LogEventLevel>(level, true);
-            Globals.MetricsLogger.Write(logEventLevel, "{ip} | {referer} | {nodeId} | {path} | {@status}", _ip, _referer, _nodeId, path, status);
+            Globals.TelemetryCollector.Write(logEventLevel, "{ip} | {referer} | {nodeId} | {path} | {@status}", _ip, _referer, _nodeId, path, status);
         }
 
         _logger.Log(logLevel, "{ip} | {referer} | {nodeId} | {path} | {@status}", _ip, _referer, _nodeId, path, status);

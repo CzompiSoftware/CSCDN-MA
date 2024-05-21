@@ -1,6 +1,6 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
 RUN apk add --no-cache icu-libs
@@ -18,7 +18,7 @@ ENV \
 VOLUME [ "/data" ]
 
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 RUN apk add --no-cache icu-libs
 WORKDIR /src
 COPY ["CSCDN-MA/CSCDN-MA.csproj", "CSCDN-MA/"]

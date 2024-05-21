@@ -39,11 +39,16 @@ Serilog.Debugging.SelfLog.Enable(msg =>
 try
 {
 	var builder = WebApplication.CreateBuilder(args);
-	Globals.Metrics = builder.Configuration.GetSection("Metrics").Get<Metrics>()?? new()
-	{
-		Provider = MetricsProvider.GrafanaLoki,
-		Host = "http://loki:3100"
-	};
+	var selection = builder.Configuration.GetSection("Metrics");
+    if (!selection.Exists()) selection = builder.Configuration.GetSection("Telemetry");
+
+
+    Globals.Telemetry = selection.Get<Telemetry>() ?? new()
+    {
+        Provider = TelemetryProvider.GrafanaLoki,
+        Host = "http://loki:3100"
+    };
+
 
     #region Logger
     var loggerConfig = new LoggerConfiguration()
@@ -59,15 +64,58 @@ try
 			outputTemplate: "[{Timestamp:HH:mm:ss}] [{Level}] [{SourceContext}] {Message}{NewLine}{Exception}",
 			theme: AnsiConsoleTheme.Literate
 		);
-    Log.Logger = loggerConfig.CreateLogger();
-    if (Globals.Metrics is not null)
+    if (Globals.Telemetry is not null)
     {
-		var metricsLoggerConfig = new LoggerConfiguration();
+		var telemetryCollectorConfig = new LoggerConfiguration();
 
-        if (Globals.Metrics.Provider is MetricsProvider.GrafanaLoki)
-			metricsLoggerConfig.WriteTo.GrafanaLoki(Globals.Metrics.Host ?? "http://loki:3100", new List<LokiLabel>() { new() { Key = "product", Value = "czsoftcdn-node" }, new() { Key = "node", Value = Globals.ApiInformation.Node ?? "n/a" } });
+        if (Globals.Telemetry.Provider is TelemetryProvider.GrafanaLoki)
+        {
+            telemetryCollectorConfig.WriteTo.GrafanaLoki(Globals.Telemetry.Host ?? "http://loki:3100", new List<LokiLabel>() { new() { Key = "product", Value = "czsoftcdn-node" }, new() { Key = "node", Value = Globals.ApiInformation.Node ?? "n/a" } });
+        }
+        else if (Globals.Telemetry.Provider is TelemetryProvider.OpenTelemetry)
+        {
+            telemetryCollectorConfig.WriteTo.OpenTelemetry(options =>
+            {
+                options.Endpoint = Globals.Telemetry.Host ?? "http://localhost:4317";
+                options.ResourceAttributes = new Dictionary<string, object>
+                {
+                    ["service.name"] = $"CSCDN-MA.{Globals.ApiInformation.Node}:usage",
+                    ["service.instance.id"] = Globals.ApiInformation.Id,
+                    ["build"] = Globals.ApiInformation.Build,
+                    ["version"] = Globals.ApiInformation.Version,
+					["start_time"] = Globals.ApiInformation.StartTime,
+					["compile_time"] = Globals.ApiInformation.CompileTime,
+                };
 
-		Globals.MetricsLogger = metricsLoggerConfig.CreateLogger();
+                if (Globals.Telemetry.Token != null)
+                {
+                    options.Headers.Add("x-otlp-api-key", Globals.Telemetry.Token);
+                }
+            });
+            loggerConfig.WriteTo.OpenTelemetry(options =>
+            {
+                options.Endpoint = Globals.Telemetry.Host ?? "http://localhost:4317";
+				options.RestrictedToMinimumLevel = Serilog.Events.LogEventLevel.Information;
+				
+                options.ResourceAttributes = new Dictionary<string, object>
+                {
+                    ["service.name"] = $"CSCDN-MA.{Globals.ApiInformation.Node}:logging",
+                    ["service.instance.id"] = Globals.ApiInformation.Id,
+                    ["build"] = Globals.ApiInformation.Build,
+                    ["version"] = Globals.ApiInformation.Version,
+                    ["start_time"] = Globals.ApiInformation.StartTime,
+                    ["compile_time"] = Globals.ApiInformation.CompileTime,
+                };
+
+                if (Globals.Telemetry.Token != null)
+                {
+                    options.Headers.Add("x-otlp-api-key", Globals.Telemetry.Token);
+                }
+            });
+        }
+
+        Log.Logger = loggerConfig.CreateLogger();
+        Globals.TelemetryCollector = telemetryCollectorConfig.CreateLogger();
     }
     
     #endregion
@@ -80,6 +128,7 @@ try
 	Log.Information("  ApplicationId: {id}", Globals.ApiInformation.Id);
 	Log.Information("  Build: \"{build}\"", Globals.ApiInformation.Build);
 	Log.Information("  Version: \"{version}\"", Globals.ApiInformation.Version);
+	Log.Information("  Telemetry provider: \"{telemetryProvider}\"", Globals.Telemetry.Provider);
 	Log.Information("  Environment: \"{environment}\"", Globals.Environment);
 	Log.Information("  CompileTime: \"{compileTime:yyyy'.'MM'.'dd'T'HH':'mm':'ss}\"", Globals.ApiInformation.CompileTime);
 	Log.Information("-------------------------------------------------------");
