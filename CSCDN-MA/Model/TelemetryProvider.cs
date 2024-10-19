@@ -1,6 +1,7 @@
 ﻿namespace CSCDNMA.Model;
 
-public enum MetricsProvider
+public enum TelemetryProvider
 {
+    OpenTelemetry,
     GrafanaLoki
 }

@@ -38,8 +38,8 @@ internal class Globals
 
     internal static HostEnvironment Environment { get; set; }
     
-    internal static Metrics Metrics { get; set; }
-    internal static Serilog.ILogger MetricsLogger { get; set; }
+    internal static Telemetry Telemetry { get; set; }
+    internal static Serilog.ILogger TelemetryCollector { get; set; }
 
     internal static JsonSerializerOptions JsonSerializerOptions => new()
     {
@@ -75,4 +75,6 @@ internal class Globals
             };
         }
     }
+
+    public static bool IsPassthroughMode { get; set; }
 }
