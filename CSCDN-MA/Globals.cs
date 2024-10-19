@@ -75,4 +75,6 @@ internal class Globals
             };
         }
     }
+
+    public static bool IsPassthroughMode { get; set; }
 }

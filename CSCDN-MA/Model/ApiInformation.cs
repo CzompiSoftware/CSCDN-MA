@@ -21,7 +21,7 @@ internal class ApiInformation
 		Build = Builtin.BuildId;
 		StartTime = DateTime.Parse(startTime.ToString("yyyy'.'MM'.'dd'T'HH':'mm':'ss"));
 		Id = node is not null ? SHA1.Encode(node) : SHA1.Encode(Guid.NewGuid().ToString());
-		Node = node is not null ? node: "Standalone";
+		Node = node ?? "Standalone";
 		CompileTime = Builtin.CompileTime;
 		var ver = CzomPack.Settings.Application.Assembly.GetName().Version;
 		Version = $"{ver.ToString(3)}-build{ver.Revision:00}";

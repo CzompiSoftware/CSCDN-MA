@@ -1,7 +1,6 @@
 ﻿using CSCDNMA.Database;
 using CSCDNMA.Model;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace CSCDNMA.Controllers;
 
