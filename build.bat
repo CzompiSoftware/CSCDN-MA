@@ -1,0 +1,1 @@
+docker compose down && docker rmi cscdn-ma -f && docker compose up -d

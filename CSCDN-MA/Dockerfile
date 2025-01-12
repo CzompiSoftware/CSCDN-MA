@@ -9,7 +9,7 @@ ENV \
     # Connection string
     CONNECTION_STRING="" \
     # CSCDN-MA version
-    CSCDNMA_VERSION=1.0.0-build11 \
+    CSCDNMA_VERSION=1.1.0-build12 \
     # Disable the invariant mode (set in base image)
     DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
     # Colors in log
